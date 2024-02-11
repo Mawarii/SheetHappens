@@ -1,4 +1,4 @@
-module gitlab.com/sheethappens
+module gitlab.com/mawarii/sheethappens
 
 go 1.22.0
 
