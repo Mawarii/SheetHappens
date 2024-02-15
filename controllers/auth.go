@@ -3,13 +3,13 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"gitlab.com/mawarii/sheethappens/models"
 	"gitlab.com/mawarii/sheethappens/utils/token"
 )
 
 func CurrentUser(c *gin.Context) {
-
 	user_id, err := token.ExtractTokenID(c)
 
 	if err != nil {
@@ -17,14 +17,14 @@ func CurrentUser(c *gin.Context) {
 		return
 	}
 
-	u, err := models.GetUserByID(user_id)
+	user, err := models.GetUserByID(user_id)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "success", "data": u})
+	c.JSON(http.StatusOK, gin.H{"data": user})
 }
 
 type LoginInput struct {
@@ -33,7 +33,7 @@ type LoginInput struct {
 }
 
 func Login(c *gin.Context) {
-
+	session := sessions.Default(c)
 	var input LoginInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -41,20 +41,20 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	u := models.User{}
+	user := models.User{}
 
-	u.Username = input.Username
-	u.Password = input.Password
+	user.Username = input.Username
+	user.Password = input.Password
 
-	token, err := models.LoginCheck(u.Username, u.Password)
+	token, err := models.LoginCheck(user.Username, user.Password)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "username or password is incorrect."})
 		return
 	}
 
+	session.Set("userID", user.ID)
 	c.JSON(http.StatusOK, gin.H{"token": token})
-
 }
 
 type RegisterInput struct {
@@ -63,19 +63,19 @@ type RegisterInput struct {
 }
 
 func Register(c *gin.Context) {
-
 	var input RegisterInput
+
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	u := models.User{}
+	user := models.User{}
 
-	u.Username = input.Username
-	u.Password = input.Password
+	user.Username = input.Username
+	user.Password = input.Password
 
-	_, err := u.SaveUser()
+	_, err := user.SaveUser()
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

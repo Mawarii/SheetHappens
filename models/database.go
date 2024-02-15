@@ -13,7 +13,6 @@ import (
 var database *gorm.DB
 
 func DatabaseInit() {
-
 	err := godotenv.Load(".env")
 
 	if err != nil {
@@ -35,5 +34,5 @@ func DatabaseInit() {
 		log.Fatal("Database initialization stopped: ", err)
 	}
 
-	database.AutoMigrate(&User{})
+	database.AutoMigrate(&User{}, &Character{})
 }

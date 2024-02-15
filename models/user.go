@@ -12,26 +12,25 @@ import (
 
 type User struct {
 	gorm.Model
-	Username string `gorm:"size:255;not null;unique" json:"username"`
-	Password string `gorm:"size:255;not null;" json:"password"`
+	Username   string `gorm:"size:255;not null;unique" json:"username"`
+	Password   string `gorm:"size:255;not null;" json:"password"`
+	Characters []Character
 }
 
 func GetUserByID(uid uint) (User, error) {
+	var user User
 
-	var u User
-
-	if err := database.First(&u, uid).Error; err != nil {
-		return u, errors.New("user not found")
+	if err := database.Preload("Characters").First(&user, uid).Error; err != nil {
+		return user, errors.New("user not found")
 	}
 
-	u.PrepareGive()
+	user.PrepareGive()
 
-	return u, nil
-
+	return user, nil
 }
 
-func (u *User) PrepareGive() {
-	u.Password = ""
+func (user *User) PrepareGive() {
+	user.Password = ""
 }
 
 func VerifyPassword(password, hashedPassword string) error {
@@ -39,56 +38,50 @@ func VerifyPassword(password, hashedPassword string) error {
 }
 
 func LoginCheck(username string, password string) (string, error) {
-
 	var err error
 
-	u := User{}
+	user := User{}
 
-	err = database.Model(User{}).Where("username = ?", username).Take(&u).Error
+	err = database.Model(User{}).Where("username = ?", username).Take(&user).Error
 
 	if err != nil {
 		return "", err
 	}
 
-	err = VerifyPassword(password, u.Password)
+	err = VerifyPassword(password, user.Password)
 
 	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
 		return "", err
 	}
 
-	token, err := token.GenerateToken(u.ID)
+	token, err := token.GenerateToken(user.ID)
 
 	if err != nil {
 		return "", err
 	}
 
 	return token, nil
-
 }
 
-func (u *User) SaveUser() (*User, error) {
-
-	var err error = database.Create(&u).Error
+func (user *User) SaveUser() (*User, error) {
+	var err error = database.Create(&user).Error
 
 	if err != nil {
 		return &User{}, err
 	}
 
-	return u, nil
+	return user, nil
 }
 
-func (u *User) BeforeSave(tx *gorm.DB) error {
+func (user *User) BeforeSave(tx *gorm.DB) error {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 
-	//turn password into hash
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
-	u.Password = string(hashedPassword)
 
-	//remove spaces in username
-	u.Username = html.EscapeString(strings.TrimSpace(u.Username))
+	user.Password = string(hashedPassword)
+	user.Username = html.EscapeString(strings.TrimSpace(user.Username))
 
 	return nil
-
 }
