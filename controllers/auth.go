@@ -3,7 +3,6 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"gitlab.com/mawarii/sheethappens/models"
 	"gitlab.com/mawarii/sheethappens/utils/token"
@@ -33,7 +32,6 @@ type LoginInput struct {
 }
 
 func Login(c *gin.Context) {
-	session := sessions.Default(c)
 	var input LoginInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -53,7 +51,6 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	session.Set("userID", user.ID)
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 

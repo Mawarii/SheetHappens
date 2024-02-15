@@ -1,8 +1,6 @@
 package main
 
 import (
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"gitlab.com/mawarii/sheethappens/controllers"
 	"gitlab.com/mawarii/sheethappens/middlewares"
@@ -13,8 +11,6 @@ func main() {
 	models.DatabaseInit()
 
 	router := gin.Default()
-	store := cookie.NewStore([]byte("secret"))
-	router.Use(sessions.Sessions("mysession", store))
 
 	public := router.Group("/api")
 
