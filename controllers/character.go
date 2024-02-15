@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gitlab.com/mawarii/sheethappens/models"
@@ -20,7 +22,7 @@ type CharacterInput struct {
 	Dodge        uint   `json:"dodge" binding:"required"`
 }
 
-func AllCharacters(c *gin.Context) {
+func GetAllCharacters(c *gin.Context) {
 	user_id, err := token.ExtractTokenID(c)
 
 	if err != nil {
@@ -28,7 +30,7 @@ func AllCharacters(c *gin.Context) {
 		return
 	}
 
-	characters, err := models.GetAllCharacters(user_id)
+	characters, err := models.GetAllCharactersByUserID(user_id)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -38,13 +40,68 @@ func AllCharacters(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": characters})
 }
 
-func CreateCharacter(c *gin.Context) {
-	user_id, _ := token.ExtractTokenID(c)
+func GetCharacter(c *gin.Context) {
+	user_id, err := token.ExtractTokenID(c)
 
-	// if err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	char_id, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	char, err := models.GetCharacterByID(user_id, uint(char_id))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": char})
+}
+
+// func UpdateCharacter(c *gin.Context) {
+// 	user_id, err := token.ExtractTokenID(c)
+
+// }
+
+func DeleteCharacter(c *gin.Context) {
+	user_id, err := token.ExtractTokenID(c)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	char_id, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = models.DeleteCharacterByID(user_id, uint(char_id))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("character with id %d deleted", char_id)})
+}
+
+func CreateCharacter(c *gin.Context) {
+	user_id, err := token.ExtractTokenID(c)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	var input CharacterInput
 
@@ -66,12 +123,12 @@ func CreateCharacter(c *gin.Context) {
 	char.Dodge = input.Dodge
 	char.UserID = user_id
 
-	_, err := char.SaveCharacter()
+	character, err := char.SaveCharacter()
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": user_id})
+	c.JSON(http.StatusOK, gin.H{"data": character})
 }

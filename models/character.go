@@ -20,14 +20,44 @@ type Character struct {
 	UserID       uint
 }
 
-func GetAllCharacters(uid uint) ([]Character, error) {
+func GetAllCharactersByUserID(uid uint) ([]Character, error) {
 	var chars []Character
 
 	if err := database.Model(Character{}).Where("user_id = ?", uid).Find(&chars).Error; err != nil {
-		return chars, errors.New("character not found")
+		return chars, errors.New("characters not found")
 	}
 
 	return chars, nil
+}
+
+func GetCharacterByID(user_id uint, char_id uint) (Character, error) {
+	var char Character
+
+	if err := database.Model(Character{}).Where("user_id = ?", user_id).First(&char, char_id).Error; err != nil {
+		return char, errors.New("character not found or not owned by this user")
+	}
+
+	return char, nil
+}
+
+func UpdateCharacterByID() {
+
+}
+
+func DeleteCharacterByID(user_id uint, char_id uint) error {
+	var char Character
+
+	result := database.Where("user_id = ? AND id = ?", user_id, char_id).Delete(&char)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return errors.New("character not found or not owned by this user")
+	}
+
+	return nil
 }
 
 func (char *Character) SaveCharacter() (*Character, error) {

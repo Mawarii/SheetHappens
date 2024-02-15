@@ -20,8 +20,12 @@ func main() {
 	protected := router.Group("/api/user")
 	protected.Use(middlewares.JwtAuthMiddleware())
 	protected.GET("/info", controllers.CurrentUser)
+
+	protected.GET("/characters", controllers.GetAllCharacters)
 	protected.POST("/characters", controllers.CreateCharacter)
-	protected.GET("/characters", controllers.AllCharacters)
+	protected.GET("/character/:id", controllers.GetCharacter)
+	// protected.PUT("/character/:id", controllers.UpdateCharacter)
+	protected.DELETE("/character/:id", controllers.DeleteCharacter)
 
 	router.Run(":8080")
 }
