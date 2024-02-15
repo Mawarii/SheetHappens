@@ -1,5 +1,5 @@
 ##### DOWNLOAD DEPENDENCIES #####
-FROM golang:1.21 AS base-build
+FROM golang:1.22 AS base-build
 WORKDIR /build
 COPY . .
 RUN CGO_ENABLED=0 GOARCH=$TARGETARCH GOOS=linux go mod download
