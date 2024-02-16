@@ -24,7 +24,7 @@ func main() {
 	protected.GET("/characters", controllers.GetAllCharacters)
 	protected.POST("/characters", controllers.CreateCharacter)
 	protected.GET("/character/:id", controllers.GetCharacter)
-	// protected.PUT("/character/:id", controllers.UpdateCharacter)
+	protected.PUT("/character/:id", controllers.UpdateCharacter)
 	protected.DELETE("/character/:id", controllers.DeleteCharacter)
 
 	router.Run(":8080")

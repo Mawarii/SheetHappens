@@ -20,6 +20,16 @@ type Character struct {
 	UserID       uint
 }
 
+func (char *Character) SaveCharacter() (*Character, error) {
+	var err error = database.Create(&char).Error
+
+	if err != nil {
+		return &Character{}, err
+	}
+
+	return char, nil
+}
+
 func GetAllCharactersByUserID(uid uint) ([]Character, error) {
 	var chars []Character
 
@@ -40,8 +50,13 @@ func GetCharacterByID(user_id uint, char_id uint) (Character, error) {
 	return char, nil
 }
 
-func UpdateCharacterByID() {
+func (char *Character) UpdateCharacterByID(user_id uint, char_id uint) (*Character, error) {
 
+	if err := database.Save(&char).Error; err != nil {
+		return char, errors.New("character not found or not owned by this user")
+	}
+
+	return char, nil
 }
 
 func DeleteCharacterByID(user_id uint, char_id uint) error {
@@ -58,14 +73,4 @@ func DeleteCharacterByID(user_id uint, char_id uint) error {
 	}
 
 	return nil
-}
-
-func (char *Character) SaveCharacter() (*Character, error) {
-	var err error = database.Create(&char).Error
-
-	if err != nil {
-		return &Character{}, err
-	}
-
-	return char, nil
 }
