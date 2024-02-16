@@ -18,6 +18,7 @@ type Character struct {
 	Weight       string `gorm:"size:255;not null;" json:"weight"`
 	Dodge        uint   `gorm:"not null;" json:"dodge"`
 	UserID       uint
+	Crafts       []Craft `gorm:"many2many:character_crafts;"`
 }
 
 func (char *Character) SaveCharacter() (*Character, error) {

@@ -34,5 +34,11 @@ func DatabaseInit() {
 		log.Fatal("Database initialization stopped: ", err)
 	}
 
-	database.AutoMigrate(&User{}, &Character{})
+	database.AutoMigrate(&User{}, &Character{}, &Craft{}, &CharacterCraft{})
+
+	err = database.SetupJoinTable(&Character{}, "Crafts", &CharacterCraft{})
+
+	if err != nil {
+		log.Fatal("Database initialization stopped: ", err)
+	}
 }
