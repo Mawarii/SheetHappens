@@ -2,6 +2,8 @@ package models
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -9,7 +11,7 @@ import (
 
 type Craft struct {
 	gorm.Model
-	Name string `gorm:"size:255;not null;unique" json:"name"`
+	Name string `gorm:"size:255;not null;unique;" json:"name"`
 }
 
 type CharacterCraft struct {
@@ -21,10 +23,16 @@ type CharacterCraft struct {
 }
 
 func (craft *Craft) SaveCraft() (*Craft, error) {
-	var err error = database.Create(&craft).Error
+	newCraftName := craft.Name
 
-	if err != nil {
-		return &Craft{}, err
+	result := database.Where("LOWER(name) = ?", strings.ToLower(craft.Name)).FirstOrCreate(&craft)
+
+	if result.Error != nil {
+		return &Craft{}, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return craft, fmt.Errorf("craft '%s' already exists", newCraftName)
 	}
 
 	return craft, nil

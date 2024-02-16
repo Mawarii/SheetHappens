@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"html"
 	"strings"
 
@@ -64,10 +65,16 @@ func LoginCheck(username string, password string) (string, error) {
 }
 
 func (user *User) SaveUser() (*User, error) {
-	var err error = database.Create(&user).Error
+	newUsername := user.Username
 
-	if err != nil {
-		return &User{}, err
+	result := database.Where("LOWER(username) = ?", strings.ToLower(user.Username)).FirstOrCreate(&user)
+
+	if result.Error != nil {
+		return &User{}, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, fmt.Errorf("username '%s' already in use", newUsername)
 	}
 
 	return user, nil
