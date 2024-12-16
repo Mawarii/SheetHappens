@@ -1,0 +1,7 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    container_name: sheethappens
+    ports:
+      - "8080:8080"
