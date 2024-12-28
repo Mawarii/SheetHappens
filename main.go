@@ -25,12 +25,12 @@ func main() {
 	auth.Post("/login", controller.Login)
 	auth.Post("/register", controller.Register)
 
-	char := api.Group("/characters")
-	char.Get("/", middleware.JWTProtected, controller.GetCharacters)
-	char.Get("/:id", middleware.JWTProtected, controller.GetCharacterById)
-	char.Post("/", middleware.JWTProtected, controller.CreateCharacter)
-	char.Put("/:id", middleware.JWTProtected, controller.UpdateCharacter)
-	char.Delete("/:id", middleware.JWTProtected, controller.DeleteCharacter)
+	char := api.Group("/characters", middleware.JWTProtected)
+	char.Get("/", controller.GetCharacters)
+	char.Get("/:id", controller.GetCharacterById)
+	char.Post("/", controller.CreateCharacter)
+	char.Put("/:id", controller.UpdateCharacter)
+	char.Delete("/:id", controller.DeleteCharacter)
 
 	app.Listen(":8080")
 }
