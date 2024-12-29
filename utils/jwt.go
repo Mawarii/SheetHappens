@@ -47,7 +47,7 @@ func VerifyToken(tokenString string) (bool, error) {
 }
 
 func ExtractToken(c *fiber.Ctx) string {
-	token := c.Query("token")
+	token := c.Cookies("token")
 
 	if token != "" {
 		return token

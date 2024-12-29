@@ -11,9 +11,9 @@ services:
       - db
   db:
     image: mongodb:8.0.4
+    restart: unless-stopped
     container_name: sheethappens_db
     env_file:
       - .env
     expose:
       - "27017"
-    restart: unless-stopped

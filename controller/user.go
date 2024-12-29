@@ -53,7 +53,7 @@ func Register(c *fiber.Ctx) error {
 func Login(c *fiber.Ctx) error {
 	b := new(authRequest)
 	if err := c.BodyParser(b); err != nil {
-		return c.Status(400).JSON(fiber.Map{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
@@ -64,24 +64,34 @@ func Login(c *fiber.Ctx) error {
 
 	err := coll.FindOne(context.Background(), bson.M{"username": b.Username}).Decode(&user)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "invalid credentials",
 		})
 	}
 
 	if !utils.ComparePassword(user.Password, b.Password) {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "invalid username or password",
+			"error": "invalid credentials",
 		})
 	}
 
 	token, err := utils.GenerateToken(user.ID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"errorf": err.Error(),
+			"error": "token generation failed",
 		})
 	}
+
+	c.Cookie(&fiber.Cookie{
+		Name:     "token",
+		Value:    token,
+		HTTPOnly: true,
+		Secure:   true,
+		SameSite: "Strict",
+		MaxAge:   60 * 60 * 24 * 7,
+	})
+
 	return c.JSON(fiber.Map{
-		"token": token,
+		"token": "login successful",
 	})
 }
