@@ -16,14 +16,15 @@ func main() {
 	defer database.CloseConnection()
 
 	app := fiber.New()
+
 	app.Use(logger.New())
 	app.Use(recover.New())
 
 	api := app.Group("/api")
 
 	auth := api.Group("/auth")
-	auth.Post("/login", controller.Login)
 	auth.Post("/register", controller.Register)
+	auth.Post("/login", controller.Login)
 
 	char := api.Group("/characters", middleware.JWTProtected)
 	char.Get("/", controller.GetCharacters)
@@ -32,5 +33,5 @@ func main() {
 	char.Put("/:id", controller.UpdateCharacter)
 	char.Delete("/:id", controller.DeleteCharacter)
 
-	app.Listen(":8080")
+	app.Listen(":3000")
 }

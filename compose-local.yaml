@@ -1,0 +1,9 @@
+services:
+  db:
+    image: mongo:8.0.4
+    restart: unless-stopped
+    container_name: sheethappens_db
+    env_file:
+      - .env
+    ports:
+      - "27017:27017"

@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"context"
-
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/Mawarii/sheethappens/database"
 	"gitlab.com/Mawarii/sheethappens/model"
@@ -37,7 +35,7 @@ func GetCharacters(c *fiber.Ctx) error {
 
 	var characters []model.Character
 
-	if err = cursor.All(context.Background(), &characters); err != nil {
+	if err = cursor.All(c.Context(), &characters); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": err.Error(),
 		})

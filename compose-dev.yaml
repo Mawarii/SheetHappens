@@ -1,9 +1,36 @@
 services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    container_name: sheethappens
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+      - db
+      
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    container_name: sheethappens_server
+    env_file:
+      - .env
+    expose:
+      - "3000"
+    depends_on:
+      - db
+
   db:
-    image: mongo:8.0.4
+    image: mongodb:8.0.4
     restart: unless-stopped
     container_name: sheethappens_db
     env_file:
       - .env
-    ports:
-      - "27017:27017"
+    expose:
+      - "27017"

@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"context"
-
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/Mawarii/sheethappens/database"
 	"gitlab.com/Mawarii/sheethappens/model"
@@ -62,7 +60,7 @@ func Login(c *fiber.Ctx) error {
 
 	var user model.User
 
-	err := coll.FindOne(context.Background(), bson.M{"username": b.Username}).Decode(&user)
+	err := coll.FindOne(c.Context(), bson.M{"username": b.Username}).Decode(&user)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "invalid credentials",
@@ -92,6 +90,6 @@ func Login(c *fiber.Ctx) error {
 	})
 
 	return c.JSON(fiber.Map{
-		"token": "login successful",
+		"message": "login successful",
 	})
 }
