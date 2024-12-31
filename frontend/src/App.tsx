@@ -1,10 +1,21 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import { ApiService } from './util/ApiService'
+import type { Character } from './util/Character'
+
+const apiService: ApiService = new ApiService("http://localhost:8080", "/api/auth/login")
 
 function App() {
   const [count, setCount] = useState(0)
+  const [characters, setCharacters] = useState<Character[]>([])
+
+  useEffect(() => {
+    apiService.relogin("test", "test")
+    .then(() => apiService.query<Character>("/api/characters"))
+    .then(data => setCharacters([...characters, data]))
+  }, [])
 
   return (
     <>
