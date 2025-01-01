@@ -21,7 +21,7 @@ func main() {
 	app.Use(logger.New())
 	app.Use(recover.New())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:3000",
+		AllowOrigins: "http://localhost:8080",
 		AllowMethods: "GET,POST,PUT,DELETE",
 		AllowHeaders: "Content-Type, Authorization",
 	}))
@@ -39,5 +39,5 @@ func main() {
 	char.Put("/:id", controller.UpdateCharacter)
 	char.Delete("/:id", controller.DeleteCharacter)
 
-	app.Listen(":8080")
+	app.Listen(":3000")
 }

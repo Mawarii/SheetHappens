@@ -12,7 +12,7 @@ services:
     depends_on:
       - backend
       - db
-      
+
   backend:
     build:
       context: ./backend
