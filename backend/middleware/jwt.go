@@ -9,6 +9,14 @@ import (
 )
 
 func JWTProtected(c *fiber.Ctx) error {
+	token := c.Cookies("token")
+
+	if token == "" {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Unauthorized",
+		})
+	}
+
 	return jwtware.New(jwtware.Config{
 		SigningKey: jwtware.SigningKey{Key: []byte(os.Getenv("JWT_SECRET"))},
 		ContextKey: "jwt",
@@ -17,5 +25,6 @@ func JWTProtected(c *fiber.Ctx) error {
 				"error": "Unauthorized",
 			})
 		},
+		TokenLookup: "cookie:token",
 	})(c)
 }

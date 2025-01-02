@@ -13,36 +13,35 @@
   </div>
 </template>
 
-<script>
-import { useTokenStore } from "../store/index";
-export default {
-  setup() {
-    const tokenStore = useTokenStore();
-    return { tokenStore };
-  },
-  data: () => {
-    return {
-      username: "",
-      password: "",
-    };
-  },
-  methods: {
-    async login(e) {
-      e.preventDefault();
-      const response = await fetch("http://localhost:3000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: this.username,
-          password: this.password,
-        }),
-      });
-      const { token } = await response.json();
-      this.tokenStore.saveToken(token);
-      this.$router.push("/characters");
-    },
-  },
+<script setup lang="ts">
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+
+const username = ref<string>("");
+const password = ref<string>("");
+const router = useRouter();
+
+const login = async () => {
+  try {
+    const response = await fetch("http://localhost:3000/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        username: username.value,
+        password: password.value,
+      }),
+    });
+
+    if (response.ok) {
+      router.push("/characters");
+    } else {
+      console.error("Login failed");
+    }
+  } catch (error) {
+    console.error("Error during login:", error);
+  }
 };
 </script>

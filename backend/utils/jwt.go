@@ -47,6 +47,12 @@ func VerifyToken(tokenString string) (bool, error) {
 }
 
 func ExtractToken(c *fiber.Ctx) string {
+	token := c.Cookies("token")
+
+	if token != "" {
+		return token
+	}
+
 	bearerToken := c.Get("Authorization")
 
 	if len(strings.Split(bearerToken, " ")) == 2 {

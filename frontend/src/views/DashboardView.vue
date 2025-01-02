@@ -1,46 +1,40 @@
 <template>
   <div>
     <h1>Characters</h1>
-    <form v-for="char in characters" :key="char.id">
-      <button @click="goToCharacterDetail(char.id)" type="button">{{ char.name }}</button>
+    <form v-if="characters">
+      <form v-for="char in characters" :key="char['id']">
+        <button @click="goToCharacterDetail(char['id'])" type="button">{{ char['name'] }}</button>
+      </form>
+    </form>
+    <form v-else>
+      <span>No Characters available!</span>
     </form>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import { useTokenStore } from '@/store';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
-interface Character {
-  id: number;
-  name: string;
-}
+const characters = ref<any | null>(null);
+const router = useRouter();
 
-export default defineComponent({
-  data() {
-    return {
-      characters: null as Character[] | null,
-    };
-  },
-  async mounted() {
-    const tokenStore = useTokenStore();
-    try {
-      const res = await fetch("http://localhost:3000/api/characters", {
-        method: "GET",
-        headers: {
-          "Authorization": "Bearer " + tokenStore.token,
-        },
-      });
-      const data = await res.json();
-      this.characters = data.characters;
-    } catch (error) {
-      console.error('Error fetching characters:', error);
-    }
-  },
-  methods: {
-    async goToCharacterDetail(id: number) {
-      this.$router.push(`/edit/${id}`);
-    },
-  },
-});
+const fetchCharacters = async () => {
+  try {
+    const res = await fetch("http://localhost:3000/api/characters", {
+      method: "GET",
+      credentials: 'include',
+    });
+    const data = await res.json();
+    characters.value = data.characters;
+  } catch (error) {
+    console.error('Error fetching characters:', error);
+  }
+};
+
+const goToCharacterDetail = (id: number) => {
+  router.push(`/characters/${id}`);
+};
+
+onMounted(fetchCharacters);
 </script>

@@ -21,9 +21,10 @@ func main() {
 	app.Use(logger.New())
 	app.Use(recover.New())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:8080",
-		AllowMethods: "GET,POST,PUT,DELETE",
-		AllowHeaders: "Content-Type, Authorization",
+		AllowOrigins:     "http://localhost:8080",
+		AllowMethods:     "GET,POST,PUT,DELETE",
+		AllowHeaders:     "Content-Type",
+		AllowCredentials: true,
 	}))
 
 	api := app.Group("/api")

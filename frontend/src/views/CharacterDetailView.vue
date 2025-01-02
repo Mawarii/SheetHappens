@@ -1,45 +1,35 @@
 <template>
   <div>
-    <h1>Character Detail</h1>
+    <h1>Character Details</h1>
     <form v-if="character">
-    <p><strong>ID:</strong> {{ character.id }}</p>
-    <p><strong>Name:</strong> {{ character.name }}</p>
+    <p><strong>ID:</strong> {{ character['id'] }}</p>
+    <p><strong>Name:</strong> {{ character['name'] }}</p>
+    <p><strong>Gender:</strong> {{ character['gender'] }}</p>
+    <p><strong>Level:</strong> {{ character['level'] }}</p>
   </form>
   </div>
 </template>
 
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import { useTokenStore } from '@/store';
+const character = ref<any | null>(null);
+const route = useRoute();
 
-interface Character {
-  id: number;
-  name: string;
-}
-
-export default defineComponent({
-  data() {
-    return {
-      character: null as Character | null,
-    };
-  },
-  async mounted() {
-    const tokenStore = useTokenStore();
-    const id = this.$route.params.id;
-    console.log(id)
-    try {
-      const res = await fetch(`http://localhost:3000/api/characters/${id}`, {
+const fetchCharacter = async () => {
+try {
+    const id = route.params.id;
+    const res = await fetch(`http://localhost:3000/api/characters/${id}`, {
         method: "GET",
-        headers: {
-          "Authorization": "Bearer " + tokenStore.token,
-        },
+        credentials: 'include',
       });
       const data = await res.json();
-      this.character = data.character;
-    } catch (error) {
-      console.error('Error fetching characters:', error);
-    }
-  },
-});
+      character.value = data.character;
+  } catch (error) {
+    console.error('Error fetching characters:', error);
+  }
+};
+
+onMounted(fetchCharacter);
 </script>
