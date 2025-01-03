@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/Mawarii/sheethappens/database"
 	"gitlab.com/Mawarii/sheethappens/model"
@@ -56,10 +58,8 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
+	user := model.User{}
 	coll := database.GetCollection("users")
-
-	var user model.User
-
 	err := coll.FindOne(c.Context(), bson.M{"username": b.Username}).Decode(&user)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -76,19 +76,33 @@ func Login(c *fiber.Ctx) error {
 	token, err := utils.GenerateToken(user.ID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "token generation failed",
+			"error": "access token generation failed",
 		})
 	}
 
 	c.Cookie(&fiber.Cookie{
-		Name:     "token",
+		Name:     "access_token",
 		Value:    token,
 		HTTPOnly: true,
 		Secure:   true,
-		MaxAge:   60 * 60 * 24 * 7,
+		Expires:  time.Now().Add(time.Minute * 30),
 	})
 
 	return c.JSON(fiber.Map{
-		"message": "Login successful",
+		"message": "login successful",
+	})
+}
+
+func Logout(c *fiber.Ctx) error {
+	c.Cookie(&fiber.Cookie{
+		Name:     "access_token",
+		Value:    "",
+		HTTPOnly: true,
+		Secure:   true,
+		Expires:  time.Now().Add(-time.Hour),
+	})
+
+	return c.JSON(fiber.Map{
+		"message": "logout successful",
 	})
 }

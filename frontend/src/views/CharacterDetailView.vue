@@ -2,11 +2,11 @@
   <div>
     <h1>Character Details</h1>
     <form v-if="character">
-    <p><strong>ID:</strong> {{ character['id'] }}</p>
-    <p><strong>Name:</strong> {{ character['name'] }}</p>
-    <p><strong>Gender:</strong> {{ character['gender'] }}</p>
-    <p><strong>Level:</strong> {{ character['level'] }}</p>
-  </form>
+      <p><strong>ID:</strong> {{ character['id'] }}</p>
+      <p><strong>Name:</strong> {{ character['name'] }}</p>
+      <p><strong>Gender:</strong> {{ character['gender'] }}</p>
+      <p><strong>Level:</strong> {{ character['level'] }}</p>
+    </form>
   </div>
 </template>
 

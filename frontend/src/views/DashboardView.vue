@@ -23,7 +23,7 @@ const fetchCharacters = async () => {
   try {
     const res = await fetch("http://localhost:3000/api/characters", {
       method: "GET",
-      credentials: 'include',
+      credentials: "include",
     });
     const data = await res.json();
     characters.value = data.characters;

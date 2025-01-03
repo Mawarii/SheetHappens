@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>LOGIN</h1>
+    <h1>Login</h1>
     <form @submit.prevent="login">
       <input v-model="username" placeholder="username" />
       <br />
@@ -9,6 +9,9 @@
       <br />
       <br />
       <button type="submit">Login</button>
+    </form>
+    <form>
+      <a href="/register">Register</a>
     </form>
   </div>
 </template>
