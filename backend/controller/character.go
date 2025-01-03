@@ -2,20 +2,17 @@ package controller
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
 	"gitlab.com/Mawarii/sheethappens/database"
 	"gitlab.com/Mawarii/sheethappens/model"
-	"gitlab.com/Mawarii/sheethappens/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func GetCharacters(c *fiber.Ctx) error {
-	userID, err := utils.ExtractTokenID(c)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
+	userToken := c.Locals("jwt").(*jwt.Token)
+	claims := userToken.Claims.(jwt.MapClaims)
+	userID := claims["user_id"].(string)
 
 	userObjectID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
@@ -47,12 +44,9 @@ func GetCharacters(c *fiber.Ctx) error {
 }
 
 func GetCharacterById(c *fiber.Ctx) error {
-	userID, err := utils.ExtractTokenID(c)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
+	userToken := c.Locals("jwt").(*jwt.Token)
+	claims := userToken.Claims.(jwt.MapClaims)
+	userID := claims["user_id"].(string)
 
 	userObjectID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
@@ -75,10 +69,8 @@ func GetCharacterById(c *fiber.Ctx) error {
 		})
 	}
 
-	var character model.Character
-
+	character := model.Character{}
 	coll := database.GetCollection("characters")
-
 	err = coll.FindOne(c.Context(), bson.D{{Key: "user_id", Value: userObjectID}, {Key: "_id", Value: charObjectID}}).Decode(&character)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -105,12 +97,9 @@ type ReqCharacter struct {
 }
 
 func CreateCharacter(c *fiber.Ctx) error {
-	userID, err := utils.ExtractTokenID(c)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
+	userToken := c.Locals("jwt").(*jwt.Token)
+	claims := userToken.Claims.(jwt.MapClaims)
+	userID := claims["user_id"].(string)
 
 	userObjectID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
@@ -142,12 +131,9 @@ func CreateCharacter(c *fiber.Ctx) error {
 }
 
 func UpdateCharacter(c *fiber.Ctx) error {
-	userID, err := utils.ExtractTokenID(c)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
+	userToken := c.Locals("jwt").(*jwt.Token)
+	claims := userToken.Claims.(jwt.MapClaims)
+	userID := claims["user_id"].(string)
 
 	userObjectID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
@@ -194,12 +180,9 @@ func UpdateCharacter(c *fiber.Ctx) error {
 }
 
 func DeleteCharacter(c *fiber.Ctx) error {
-	userID, err := utils.ExtractTokenID(c)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
+	userToken := c.Locals("jwt").(*jwt.Token)
+	claims := userToken.Claims.(jwt.MapClaims)
+	userID := claims["user_id"].(string)
 
 	userObjectID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {

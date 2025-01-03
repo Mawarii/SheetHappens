@@ -9,7 +9,7 @@ import (
 )
 
 func JWTProtected(c *fiber.Ctx) error {
-	token := c.Cookies("token")
+	token := c.Cookies("access_token")
 
 	if token == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -25,6 +25,6 @@ func JWTProtected(c *fiber.Ctx) error {
 				"error": "Unauthorized",
 			})
 		},
-		TokenLookup: "cookie:token",
+		TokenLookup: "cookie:access_token",
 	})(c)
 }
