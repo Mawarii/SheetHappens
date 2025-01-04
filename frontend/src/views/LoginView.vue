@@ -11,7 +11,7 @@
       <button type="submit">Login</button>
     </form>
     <form>
-      <a href="/register">Register</a>
+      <RouterLink to="/register">Register</RouterLink>
     </form>
   </div>
 </template>
@@ -37,7 +37,6 @@ const login = async () => {
         password: password.value,
       }),
     });
-
     if (response.ok) {
       router.push("/characters");
     } else {
