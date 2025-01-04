@@ -2,10 +2,15 @@
   <div>
     <h1>Character Details</h1>
     <form v-if="character">
-      <p><strong>ID:</strong> {{ character['id'] }}</p>
       <p><strong>Name:</strong> {{ character['name'] }}</p>
-      <p><strong>Gender:</strong> {{ character['gender'] }}</p>
-      <p><strong>Level:</strong> {{ character['level'] }}</p>
+      <p v-if="character['level']"><strong>Level:</strong> {{ character['level'] }}</p>
+      <p v-if="character['health']"><strong>Health:</strong> {{ character['health'] }}</p>
+      <p v-if="character['mentalhealth']"><strong>Mental Health:</strong> {{ character['mentalhealth'] }}</p>
+      <p v-if="character['race']"><strong>Race:</strong> {{ character['race'] }}</p>
+      <p v-if="character['gender']"><strong>Gender:</strong> {{ character['gender'] }}</p>
+      <p v-if="character['height']"><strong>Height:</strong> {{ character['height'] }}</p>
+      <p v-if="character['weight']"><strong>Weight:</strong> {{ character['weight'] }}</p>
+      <p v-if="character['dodge']"><strong>Dodge:</strong> {{ character['dodge'] }}</p>
     </form>
   </div>
 </template>

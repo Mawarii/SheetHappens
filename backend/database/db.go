@@ -38,9 +38,14 @@ func Init() {
 func createUniqueIndex(coll string, index string) error {
 	collection := db.Collection(coll)
 
+	collation := options.Collation{
+		Locale:   "en",
+		Strength: 2,
+	}
+
 	indexModel := mongo.IndexModel{
 		Keys:    bson.D{{Key: index, Value: 1}},
-		Options: options.Index().SetUnique(true),
+		Options: options.Index().SetUnique(true).SetCollation(&collation),
 	}
 
 	_, err := collection.Indexes().CreateOne(context.Background(), indexModel)

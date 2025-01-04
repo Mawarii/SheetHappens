@@ -10,8 +10,8 @@ type Character struct {
 	MentalHealth int                `json:"mentalhealth,omitempty" bson:"mentalhealth,omitempty"`
 	Race         string             `json:"race,omitempty"         bson:"race,omitempty"`
 	Gender       string             `json:"gender,omitempty"       bson:"gender,omitempty"`
-	Height       float64            `json:"height,omitempty"       bson:"height,omitempty"`
-	Weight       float64            `json:"weight,omitempty"       bson:"weight,omitempty"`
+	Height       string             `json:"height,omitempty"       bson:"height,omitempty"`
+	Weight       string             `json:"weight,omitempty"       bson:"weight,omitempty"`
 	Dodge        int                `json:"dodge,omitempty"        bson:"dodge,omitempty"`
 	UserID       primitive.ObjectID `json:"user_id"                bson:"user_id"`
 }
