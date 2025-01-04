@@ -9,13 +9,23 @@
         @click="goToCharacterDetail(char['id'])"
       >
         <span class="char-name">{{ char['name'] }}</span>
-        <button class="delete-btn" @click.stop="deleteCharacter(char['id'])" type="button">
+        <button class="delete-btn" @click.stop="confirmDelete(char['id'])" type="button">
           <OhVueIcon name="bi-trash-fill" />
         </button>
       </div>
     </div>
     <div v-else>
       <span>No Characters available!</span>
+    </div>
+  </div>
+
+  <div v-if="showModal" class="modal-overlay">
+    <div class="modal">
+      <h2>Are you sure you want to delete this character?</h2>
+      <div class="modal-actions">
+        <button @click="deleteCharacter" class="confirm-btn">Yes, delete</button>
+        <button @click="cancelDelete" class="cancel-btn">Cancel</button>
+      </div>
     </div>
   </div>
 </template>
@@ -29,6 +39,8 @@ import { BiTrashFill } from "oh-vue-icons/icons";
 addIcons(BiTrashFill)
 
 const characters = ref<any | null>(null);
+const showModal = ref(false);
+const characterToDelete = ref<number | null>(null);
 const router = useRouter();
 
 const fetchCharacters = async () => {
@@ -48,19 +60,33 @@ const goToCharacterDetail = (id: number) => {
   router.push(`/characters/${id}`);
 };
 
-const deleteCharacter = async (id: number) => {
+const confirmDelete = (id: number) => {
+  characterToDelete.value = id;
+  showModal.value = true;
+};
+
+const cancelDelete = () => {
+  showModal.value = false;
+  characterToDelete.value = null;
+};
+
+const deleteCharacter = async () => {
   try {
-    const res = await fetch(`http://localhost:3000/api/characters/${id}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
-    if (res.ok) {
-      await fetchCharacters();
+    if (characterToDelete.value !== null) {
+      const res = await fetch(`http://localhost:3000/api/characters/${characterToDelete.value}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (res.ok) {
+        showModal.value = false;
+        characterToDelete.value = null;
+        fetchCharacters();
+      }
     }
   } catch (error) {
     console.error('Error deleting character:', error);
-  }  
-}
+  }
+};
 
 const createCharacter = () => {
   router.push("/characters/create");
@@ -134,5 +160,57 @@ h1 {
 
 .delete-btn:hover {
   background-color: #c0392b;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal */
+.modal {
+  background-color: rgb(0, 0, 0);
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  width: 300px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal h2 {
+  margin-bottom: 20px;
+}
+
+/* Actions for the modal */
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.confirm-btn, .cancel-btn {
+  padding: 8px 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.confirm-btn {
+  background-color: #FF4136;
+  color: white;
+}
+
+.cancel-btn {
+  background-color: #636363;
+  color: white;
 }
 </style>

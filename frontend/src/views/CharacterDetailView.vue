@@ -92,9 +92,9 @@ onMounted(fetchCharacter);
 .switch {
   position: relative;
   display: inline-block;
-  width: 25px; /* Halbe Größe */
-  height: 14px; /* Halbe Größe */
-  vertical-align: middle; /* Vertikal mittig */
+  width: 25px;
+  height: 14px;
+  vertical-align: middle;
 }
 
 /* Hide default HTML checkbox */
@@ -113,19 +113,19 @@ onMounted(fetchCharacter);
   right: 0;
   bottom: 0;
   background-color: #ccc;
-  border-radius: 34px; /* Sicherstellen, dass der Slider rund bleibt */
+  border-radius: 34px;
   transition: 0.2s;
 }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 12px; /* Reduziert für kleinere Größe */
-  width: 12px; /* Reduziert für kleinere Größe */
-  left: 1px; /* Positioniert den Schieberegler */
-  bottom: 1px; /* Positioniert den Schieberegler */
+  height: 12px;
+  width: 12px;
+  left: 1px;
+  bottom: 1px;
   background-color: white;
-  border-radius: 50%; /* Rundet den Schieberegler */
+  border-radius: 50%;
   transition: 0.2s;
 }
 
@@ -138,7 +138,7 @@ input:focus + .slider {
 }
 
 input:checked + .slider:before {
-  transform: translateX(11px); /* Die Bewegung wurde angepasst */
+  transform: translateX(11px);
 }
 
 /* Rounded sliders */

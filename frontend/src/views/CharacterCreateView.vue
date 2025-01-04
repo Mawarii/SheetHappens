@@ -21,7 +21,6 @@ import { ref } from 'vue';
 import { useRouter } from "vue-router";
 
 const character = ref<any>({});
-
 const router = useRouter();
 
 const createCharacter = async () => {
