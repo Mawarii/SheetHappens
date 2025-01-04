@@ -104,7 +104,7 @@ h1 {
   align-items: center;
   padding: 12px 16px;
   margin-bottom: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid #626262;
   border-radius: 8px;
   background-color: #000000;
   cursor: pointer;
@@ -112,13 +112,16 @@ h1 {
 }
 
 .character-item:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: #2c2c2c;
+  background-color: #252525;
+}
+
+.character-item:has(.delete-btn:hover) {
+  background-color: #000000;
 }
 
 .char-name {
   font-size: 18px;
-  font-weight: 500;
+  color: #afafaf;
 }
 
 .delete-btn {
