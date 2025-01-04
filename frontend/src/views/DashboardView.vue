@@ -1,8 +1,6 @@
 <template>
   <div>
-    <h1>Characters 
-      <button class="add-btn" @click="createCharacter()" type="button">+</button>
-    </h1>
+    <h1>Characters <button class="add-btn" @click="createCharacter()" type="button">+</button></h1>
     <div v-if="characters" class="character-list">
       <div 
         v-for="char in characters" 

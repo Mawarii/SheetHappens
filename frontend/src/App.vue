@@ -7,6 +7,7 @@
 
       <nav>
         <RouterLink to="/">Login</RouterLink>
+        <RouterLink to="/characters">Dashboard</RouterLink>
         <button @click="logout" class="logout-button">Logout</button>
       </nav>
     </div>
