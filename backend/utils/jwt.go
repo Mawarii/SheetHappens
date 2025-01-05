@@ -24,7 +24,7 @@ func GenerateToken(id primitive.ObjectID) (string, error) {
 
 	claims := jwt.MapClaims{}
 	claims["user_id"] = userObjectID
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+	claims["exp"] = time.Now().Add(24 * time.Hour).Unix()
 
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
