@@ -26,7 +26,20 @@
           <input v-model="newSkillCategory" placeholder="Category" />
           <input v-model="newSkillName" placeholder="Skill" />
           <input v-model.number="newSkillValue" type="number" placeholder="Value" min="0" />
-          <button type="button" @click="addSkill">Add Skill</button>
+          <button type="button" @click="addSkill()">Add Skill</button>
+        </div>
+      </div>
+      <div>
+        <h3>Craft</h3>
+        <div v-for="(_, craft) in character.craft" :key="craft">
+          <strong>{{ craft }}: </strong>
+            <input v-model.number="character.craft[craft]" type="number" min="0" />
+            <button type="button" @click="removeCraft(String(craft))">Remove</button>
+        </div>
+        <div>
+          <input v-model="newCraftName" placeholder="Craft" />
+          <input v-model.number="newCraftValue" type="number" placeholder="Value" min="0" />
+          <button type="button" @click="addCraft()">Add Craft</button>
         </div>
       </div>
       <button type="submit">{{ editMode ? 'Save Changes' : 'Create Character' }}</button>
@@ -40,12 +53,15 @@ import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from "vue-router";
 
 const character = ref<any>({
-  skills: {}
+  skills: {},
+  crafts: {}
 });
 
 const newSkillCategory = ref('');
 const newSkillName = ref('');
 const newSkillValue = ref(0);
+const newCraftName = ref('');
+const newCraftValue = ref(0);
 const router = useRouter();
 const route = useRoute();
 const editMode = route.params.id;
@@ -67,6 +83,20 @@ const removeSkill = (category: string, skill: string) => {
     if (Object.keys(character.value.skills[category]).length === 0) {
       delete character.value.skills[category];
     }
+  }
+};
+
+const addCraft = () => {
+  if (newCraftName.value) {
+    character.value.craft[newCraftName.value] = newCraftValue.value;
+    newCraftName.value = '';
+    newCraftValue.value = 0;
+  }
+};
+
+const removeCraft = (craft: string) => {
+  if (character.value.craft[craft]) {
+    delete character.value.craft[craft];
   }
 };
 

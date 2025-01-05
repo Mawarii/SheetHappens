@@ -1,22 +1,28 @@
 <template>
   <div>
     <h1>Character Details
-      <button class="delete-btn" @click.stop="goToEditMode()" type="button">
+      <button class="edit-btn" @click.stop="goToEditMode()" type="button">
           <OhVueIcon name="fa-edit" />
       </button>
     </h1>
     <form v-if="character">
       <div v-for="(value, key) in character" :key="key">
-        <p v-if="!['id', 'user_id', 'skills'].includes(String(key)) && value">
+        <p v-if="!['id', 'user_id', 'skills', 'craft'].includes(String(key)) && value">
           <strong>{{ capitalizeFirstLetter(String(key)) }}:</strong> {{ value }}
         </p>
         <div v-if="String(key) === 'skills'">
-          <strong>Skills:</strong>
+          <strong>{{ capitalizeFirstLetter(String(key)) }}:</strong>
           <div v-for="(skills, category) in value" :key="category">
             <strong>{{ category }}</strong>
             <div v-for="(skillValue, skill) in skills" :key="skill">
-              <span>{{ skill }}: </span><span>{{ skillValue }}</span>
+              <span>{{ skill }}: {{ skillValue }}</span>
             </div>
+          </div>
+        </div>
+        <div v-if="String(key) === 'craft'">
+          <strong>{{ capitalizeFirstLetter(String(key)) }}</strong>
+          <div v-for="(craftValue, craft) in value" :key="craft">
+            <span>{{ craft }}: {{ craftValue }}</span>
           </div>
         </div>
       </div>
@@ -67,3 +73,10 @@ const goToEditMode = () => {
 
 onMounted(fetchCharacter);
 </script>
+
+<style scoped>
+.edit-btn {
+  background-color: rgb(0, 98, 255);
+  color: white;
+}
+</style>

@@ -1,13 +1,8 @@
 <template>
   <div class="dashboard">
-    <h1>Characters <button class="add-btn" @click="createCharacter()" type="button">+</button></h1>
+    <h1>Characters <button class="add-btn" @click="createCharacter()" type="button"><OhVueIcon name="px-plus" scale="1.5" /></button></h1>
     <div v-if="characters" class="character-list">
-      <div 
-        v-for="char in characters" 
-        :key="char['id']" 
-        class="character-item"
-        @click="goToCharacterDetail(char['id'])"
-      >
+      <div v-for="char in characters" :key="char['id']" @click="goToCharacterDetail(char['id'])" class="character-item">
         <span class="char-name">{{ char['name'] }}</span>
         <button class="delete-btn" @click.stop="confirmDelete(char['id'])" type="button">
           <OhVueIcon name="bi-trash-fill" />
@@ -35,9 +30,9 @@ import fetchWithRedirect from '@/utils/fetchWithRedirect';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { OhVueIcon, addIcons } from "oh-vue-icons";
-import { BiTrashFill } from "oh-vue-icons/icons";
+import { BiTrashFill, PxPlus } from "oh-vue-icons/icons";
 
-addIcons(BiTrashFill)
+addIcons(BiTrashFill, PxPlus)
 
 const characters = ref<any | null>(null);
 const showModal = ref(false);
@@ -102,15 +97,12 @@ h1 {
 }
 
 .add-btn {
+  padding: 0;
   background-color: #4caf50;
-  color: white;
-  border: none;
+  color: rgb(255, 255, 255);
   border-radius: 50%;
   width: 40px;
   height: 40px;
-  font-size: 24px;
-  cursor: pointer;
-  transition: background-color 0.3s;
 }
 
 .add-btn:hover {
@@ -150,11 +142,6 @@ h1 {
 .delete-btn {
   background-color: #e74c3c;
   color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
 }
 
 .delete-btn:hover {
