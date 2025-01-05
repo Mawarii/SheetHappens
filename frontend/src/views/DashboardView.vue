@@ -31,6 +31,7 @@
 </template>
 
 <script setup lang="ts">
+import fetchWithRedirect from '@/utils/fetchWithRedirect';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { OhVueIcon, addIcons } from "oh-vue-icons";
@@ -45,9 +46,8 @@ const router = useRouter();
 
 const fetchCharacters = async () => {
   try {
-    const res = await fetch("http://localhost:3000/api/characters", {
+    const res = await fetchWithRedirect("http://localhost:3000/api/characters", {
       method: "GET",
-      credentials: "include",
     });
     const data = await res.json();
     characters.value = data.characters;
@@ -73,9 +73,8 @@ const cancelDelete = () => {
 const deleteCharacter = async () => {
   try {
     if (characterToDelete.value !== null) {
-      const res = await fetch(`http://localhost:3000/api/characters/${characterToDelete.value}`, {
+      const res = await fetchWithRedirect(`http://localhost:3000/api/characters/${characterToDelete.value}`, {
         method: "DELETE",
-        credentials: "include",
       });
       if (res.ok) {
         showModal.value = false;
