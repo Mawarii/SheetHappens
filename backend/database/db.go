@@ -29,9 +29,15 @@ func Init() {
 
 	db = client.Database("sheethappens")
 	if err := createUniqueIndex("users", "username"); err != nil {
-		log.Fatal("Could not create index:", err)
+		log.Fatal("Could not create unique index 'username' for collection 'users':", err)
 	} else {
-		log.Println("Unique index on 'username' created successfully")
+		log.Println("Successfully created unique index 'username' for collection 'users'")
+	}
+
+	if err := createUniqueIndex("skills", "name"); err != nil {
+		log.Fatal("Could not create unique index 'name' for collection 'skills':", err)
+	} else {
+		log.Println("Successfully created unique index 'name' for collection 'skills'")
 	}
 }
 

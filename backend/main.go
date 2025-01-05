@@ -34,12 +34,19 @@ func main() {
 	auth.Post("/login", controller.Login)
 	auth.Get("/logout", controller.Logout)
 
-	char := api.Group("/characters", middleware.JWTProtected)
-	char.Get("/", controller.GetCharacters)
-	char.Get("/:id", controller.GetCharacterById)
-	char.Post("/", controller.CreateCharacter)
-	char.Put("/:id", controller.UpdateCharacter)
-	char.Delete("/:id", controller.DeleteCharacter)
+	characters := api.Group("/characters", middleware.JWTProtected)
+	characters.Get("/", controller.GetCharacters)
+	characters.Get("/:id", controller.GetCharacterById)
+	characters.Post("/", controller.CreateCharacter)
+	characters.Put("/:id", controller.UpdateCharacter)
+	characters.Delete("/:id", controller.DeleteCharacter)
+
+	skills := api.Group("/skills")
+	skills.Get("/", controller.GetSkills)
+	skills.Get("/:id", controller.GetSkillById)
+	skills.Post("/", middleware.JWTProtected, controller.CreateSkill)
+	skills.Put("/:id", middleware.JWTProtected, controller.UpdateSkill)
+	skills.Delete("/:id", middleware.JWTProtected, controller.DeleteSkill)
 
 	app.Listen(":3000")
 }
