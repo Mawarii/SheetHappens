@@ -2,20 +2,20 @@
   <div>
     <h1>{{ editMode ? 'Edit Character' : 'Create New Character' }}</h1>
     <form @submit.prevent="editMode ? updateCharacter() : createCharacter()">
-      <p><strong>Name:</strong> <input v-model="character.name" placeholder="name" /></p>
-      <p><strong>Level:</strong> <input v-model="character.level" placeholder="level" type="number" /></p>
-      <p><strong>Health:</strong> <input v-model="character.health" placeholder="health" type="number" /></p>
-      <p><strong>Mental Health:</strong> <input v-model="character.mentalhealth" placeholder="mental health" type="number"/></p>
-      <p><strong>Mana:</strong> <input v-model="character.mana" placeholder="mana" type="number"/></p>
-      <p><strong>Race:</strong> <input v-model="character.race" placeholder="race" /></p>
-      <p><strong>Gender:</strong> <input v-model="character.gender" placeholder="gender" /></p>
-      <p><strong>Height:</strong> <input v-model="character.height" placeholder="height" /></p>
-      <p><strong>Weight:</strong> <input v-model="character.weight" placeholder="weight" /></p>
-      <p><strong>Dodge:</strong> <input v-model="character.dodge" placeholder="dodge" type="number" /></p>
+      <p>Name: <input v-model="character.name" placeholder="name" /></p>
+      <p>Level: <input v-model="character.level" placeholder="level" type="number" /></p>
+      <p>Health: <input v-model="character.health" placeholder="health" type="number" /></p>
+      <p>Mental Health: <input v-model="character.mentalhealth" placeholder="mental health" type="number"/></p>
+      <p>Mana: <input v-model="character.mana" placeholder="mana" type="number"/></p>
+      <p>Race: <input v-model="character.race" placeholder="race" /></p>
+      <p>Gender: <input v-model="character.gender" placeholder="gender" /></p>
+      <p>Height: <input v-model="character.height" placeholder="height" /></p>
+      <p>Weight: <input v-model="character.weight" placeholder="weight" /></p>
+      <p>Dodge: <input v-model="character.dodge" placeholder="dodge" type="number" /></p>
       <div>
         <h3>Skills</h3>
         <div v-for="(skills, category) in character.skills" :key="category">
-          <strong>{{ category }}</strong>
+          {{ category }}
           <div v-for="(_, skill) in skills" :key="skill">
             <span>{{ skill }}: </span>
             <input v-model.number="character.skills[category][skill]" type="number" min="0" />
@@ -32,7 +32,7 @@
       <div>
         <h3>Craft</h3>
         <div v-for="(_, craft) in character.craft" :key="craft">
-          <strong>{{ craft }}: </strong>
+          {{ craft }}: 
             <input v-model.number="character.craft[craft]" type="number" min="0" />
             <button type="button" @click="removeCraft(String(craft))">Remove</button>
         </div>
@@ -54,7 +54,7 @@ import { useRouter, useRoute } from "vue-router";
 
 const character = ref<any>({
   skills: {},
-  crafts: {}
+  craft: {}
 });
 
 const newSkillCategory = ref('');
@@ -87,6 +87,9 @@ const removeSkill = (category: string, skill: string) => {
 };
 
 const addCraft = () => {
+  if (!character.value.craft) {
+    character.value.craft = {};
+  }
   if (newCraftName.value) {
     character.value.craft[newCraftName.value] = newCraftValue.value;
     newCraftName.value = '';

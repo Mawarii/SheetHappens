@@ -1,26 +1,26 @@
 <template>
   <div>
-    <h1>Character Details
+    <h1>{{ character['name'] }}
       <button class="edit-btn" @click.stop="goToEditMode()" type="button">
           <OhVueIcon name="fa-edit" />
       </button>
     </h1>
     <form v-if="character">
       <div v-for="(value, key) in character" :key="key">
-        <p v-if="!['id', 'user_id', 'skills', 'craft'].includes(String(key)) && value">
-          <strong>{{ capitalizeFirstLetter(String(key)) }}:</strong> {{ value }}
-        </p>
+        <div v-if="!['id', 'name', 'user_id', 'skills', 'craft'].includes(String(key)) && value">
+          <span :class="key" class="key">{{ capitalizeFirstLetter(String(key)) }}: </span><span class="value">{{ value }}</span>
+        </div>
         <div v-if="String(key) === 'skills'">
-          <strong>{{ capitalizeFirstLetter(String(key)) }}:</strong>
+          {{ capitalizeFirstLetter(String(key)) }}:
           <div v-for="(skills, category) in value" :key="category">
-            <strong>{{ category }}</strong>
+            {{ category }}
             <div v-for="(skillValue, skill) in skills" :key="skill">
               <span>{{ skill }}: {{ skillValue }}</span>
             </div>
           </div>
         </div>
         <div v-if="String(key) === 'craft'">
-          <strong>{{ capitalizeFirstLetter(String(key)) }}</strong>
+          {{ capitalizeFirstLetter(String(key)) }}
           <div v-for="(craftValue, craft) in value" :key="craft">
             <span>{{ craft }}: {{ craftValue }}</span>
           </div>
@@ -78,5 +78,9 @@ onMounted(fetchCharacter);
 .edit-btn {
   background-color: rgb(0, 98, 255);
   color: white;
+}
+
+.edit-btn:hover {
+  background-color: rgb(0, 73, 191);
 }
 </style>

@@ -98,7 +98,7 @@ h1 {
 
 .add-btn {
   padding: 0;
-  background-color: #4caf50;
+  background-color: #448e47;
   color: rgb(255, 255, 255);
   border-radius: 50%;
   width: 40px;
@@ -106,7 +106,7 @@ h1 {
 }
 
 .add-btn:hover {
-  background-color: #45a049;
+  background-color: #397e3c;
 }
 
 .character-list {
