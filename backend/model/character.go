@@ -4,6 +4,7 @@ import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type Character struct {
 	ID           primitive.ObjectID        `json:"id"                     bson:"_id"`
+	UserID       primitive.ObjectID        `json:"user_id"                bson:"user_id"`
 	Name         string                    `json:"name,omitempty"         bson:"name,omitempty"`
 	Level        int                       `json:"level,omitempty"        bson:"level,omitempty"`
 	Health       int                       `json:"health,omitempty"       bson:"health,omitempty"`
@@ -15,5 +16,5 @@ type Character struct {
 	Weight       string                    `json:"weight,omitempty"       bson:"weight,omitempty"`
 	Dodge        int                       `json:"dodge,omitempty"        bson:"dodge,omitempty"`
 	Skills       map[string]map[string]int `json:"skills,omitempty"       bson:"skills,omitempty"`
-	UserID       primitive.ObjectID        `json:"user_id"                bson:"user_id"`
+	Craft        map[string]int            `json:"craft,omitempty"        bson:"craft,omitempty"`
 }
