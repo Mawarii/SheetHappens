@@ -23,7 +23,7 @@ a,
 
 @media (min-width: 1024px) {
   body {
-    display: flex;
+    display: block;
     flex-direction: column;
     place-items: flex-start;
   }

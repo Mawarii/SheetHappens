@@ -51,7 +51,7 @@ header {
 nav {
   width: 100%;
   font-size: 14px;
-  text-align: center;
+  text-align: left;
 }
 
 nav a,
@@ -77,7 +77,7 @@ nav a:first-of-type,
 
 /* Adjust the content to make room for the fixed header */
 .content {
-  margin-top: 80px; /* Adjust this based on the height of your header */
+  margin-top: 60px;
   padding: 2rem;
 }
 </style>

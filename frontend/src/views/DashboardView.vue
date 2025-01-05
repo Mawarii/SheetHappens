@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="dashboard">
     <h1>Characters <button class="add-btn" @click="createCharacter()" type="button">+</button></h1>
     <div v-if="characters" class="character-list">
       <div 
@@ -212,5 +212,9 @@ h1 {
 .cancel-btn {
   background-color: #636363;
   color: white;
+}
+
+.dashboard {
+  width: 100%;
 }
 </style>
