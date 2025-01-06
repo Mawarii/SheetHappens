@@ -166,6 +166,12 @@ func DeleteCharacter(c *fiber.Ctx) error {
 		})
 	}
 
+	if result.RowsAffected == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Character already deleted",
+		})
+	}
+
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "Character deleted successfully",
 	})
