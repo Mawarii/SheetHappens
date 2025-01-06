@@ -1,73 +1,71 @@
 package controller
 
 import (
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/Mawarii/sheethappens/database"
 	"gitlab.com/Mawarii/sheethappens/model"
 	"gitlab.com/Mawarii/sheethappens/utils"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type authRequest struct {
-	Username string `json:"username" bson:"username"`
-	Password string `json:"password" bson:"password"`
+	Username string `gorm:"not null;unique;"  json:"username"`
+	Password string `gorm:"not null;"         json:"password"`
 }
 
 func Register(c *fiber.Ctx) error {
-	b := new(authRequest)
-	if err := c.BodyParser(b); err != nil {
+	body := new(authRequest)
+	if err := c.BodyParser(body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": err.Error(),
 		})
 	}
 
-	if b.Username == "" || b.Password == "" {
+	if body.Username == "" || body.Password == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Username and Password required!",
 		})
 	}
 
+	body.Username = strings.ToLower(body.Username)
+
 	var user = model.User{
-		ID:       primitive.NewObjectID(),
-		Username: b.Username,
-		Password: utils.GeneratePassword(b.Password),
+		Username: body.Username,
+		Password: utils.GeneratePassword(body.Password),
 	}
 
-	coll := database.GetCollection("users")
-	result, err := coll.InsertOne(c.Context(), user)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "failed to create user",
-			"error":   err.Error(),
+	result := database.DB().Create(&user)
+
+	if result.Error != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": result.Error,
 		})
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"result": result,
+		"user_id": user.ID,
 	})
 }
 
 func Login(c *fiber.Ctx) error {
-	b := new(authRequest)
-	if err := c.BodyParser(b); err != nil {
+	body := new(authRequest)
+	if err := c.BodyParser(body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
 
 	user := model.User{}
-	coll := database.GetCollection("users")
-	err := coll.FindOne(c.Context(), bson.M{"username": b.Username}).Decode(&user)
-	if err != nil {
+	result := database.DB().Where("username = LOWER(?)", body.Username).First(&user)
+	if result.Error != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "invalid credentials",
 		})
 	}
 
-	if !utils.ComparePassword(user.Password, b.Password) {
+	if !utils.ComparePassword(user.Password, body.Password) {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "invalid credentials",
 		})

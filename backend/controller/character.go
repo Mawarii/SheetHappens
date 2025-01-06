@@ -5,54 +5,30 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"gitlab.com/Mawarii/sheethappens/database"
 	"gitlab.com/Mawarii/sheethappens/model"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func GetCharacters(c *fiber.Ctx) error {
 	userToken := c.Locals("jwt").(*jwt.Token)
 	claims := userToken.Claims.(jwt.MapClaims)
-	userID := claims["user_id"].(string)
-
-	userObjectID, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
-
-	coll := database.GetCollection("characters")
-	cursor, err := coll.Find(c.Context(), bson.D{{Key: "user_id", Value: userObjectID}})
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
+	userID := uint(claims["user_id"].(float64))
 
 	var characters []model.Character
 
-	if err = cursor.All(c.Context(), &characters); err != nil {
+	result := database.DB().Model(model.Character{}).Where("user_id = ?", userID).Find(&characters)
+
+	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
+			"error": result.Error,
 		})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"characters": characters,
-	})
+	return c.Status(fiber.StatusOK).JSON(characters)
 }
 
 func GetCharacterById(c *fiber.Ctx) error {
 	userToken := c.Locals("jwt").(*jwt.Token)
 	claims := userToken.Claims.(jwt.MapClaims)
-	userID := claims["user_id"].(string)
-
-	userObjectID, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
+	userID := uint(claims["user_id"].(float64))
 
 	id := c.Params("id")
 	if id == "" {
@@ -61,95 +37,80 @@ func GetCharacterById(c *fiber.Ctx) error {
 		})
 	}
 
-	charObjectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
+	var character model.Character
+
+	result := database.DB().Model(model.Character{}).Where("user_id = ?", userID).First(&character, id)
+	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
+			"error": result.Error,
 		})
 	}
 
-	character := model.Character{}
-	coll := database.GetCollection("characters")
-	err = coll.FindOne(c.Context(), bson.D{{Key: "user_id", Value: userObjectID}, {Key: "_id", Value: charObjectID}}).Decode(&character)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
-
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"character": character,
-	})
+	return c.Status(fiber.StatusOK).JSON(character)
 }
 
 type ReqCharacter struct {
-	UserID       primitive.ObjectID                `json:"user_id"                bson:"user_id"`
-	Name         string                            `json:"name"                   bson:"name"`
-	Level        int                               `json:"level,omitempty"        bson:"level,omitempty"`
-	Health       int                               `json:"health,omitempty"       bson:"health,omitempty"`
-	MentalHealth int                               `json:"mentalhealth,omitempty" bson:"mentalhealth,omitempty"`
-	Mana         int                               `json:"mana,omitempty"         bson:"mana,omitempty"`
-	Race         string                            `json:"race,omitempty"         bson:"race,omitempty"`
-	Gender       string                            `json:"gender,omitempty"       bson:"gender,omitempty"`
-	Height       string                            `json:"height,omitempty"       bson:"height,omitempty"`
-	Weight       string                            `json:"weight,omitempty"       bson:"weight,omitempty"`
-	Dodge        int                               `json:"dodge,omitempty"        bson:"dodge,omitempty"`
-	Skills       map[string][]model.SkillValuePair `json:"skills,omitempty"       bson:"skills,omitempty"`
+	Name         string `gorm:"not null;" json:"name"`
+	Level        uint   `json:"level,omitempty"`
+	Health       int    `json:"health,omitempty"`
+	MentalHealth int    `json:"mental_health,omitempty"`
+	Mana         uint   `json:"mana,omitempty"`
+	Race         string `json:"race,omitempty"`
+	Gender       string `json:"gender,omitempty"`
+	Height       string `json:"height,omitempty"`
+	Weight       string `json:"weight,omitempty"`
+	Dodge        uint   `json:"dodge,omitempty"`
 }
 
 func CreateCharacter(c *fiber.Ctx) error {
 	userToken := c.Locals("jwt").(*jwt.Token)
 	claims := userToken.Claims.(jwt.MapClaims)
-	userID := claims["user_id"].(string)
+	userID := uint(claims["user_id"].(float64))
 
-	userObjectID, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
-
-	b := new(ReqCharacter)
-	if err := c.BodyParser(b); err != nil {
+	body := new(ReqCharacter)
+	if err := c.BodyParser(body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": err.Error(),
 		})
 	}
-	b.UserID = userObjectID
 
-	coll := database.GetCollection("characters")
-	result, err := coll.InsertOne(c.Context(), b)
-	if err != nil {
+	var character model.Character
+	character.Name = body.Name
+	character.Level = body.Level
+	character.Health = body.Health
+	character.MentalHealth = body.MentalHealth
+	character.Mana = body.Mana
+	character.Race = body.Race
+	character.Gender = body.Gender
+	character.Height = body.Height
+	character.Weight = body.Weight
+	character.Dodge = body.Dodge
+	character.UserID = userID
+
+	result := database.DB().Create(&character)
+	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "failed to create character",
-			"error":   err.Error(),
+			"message": "Failed to create character",
+			"error":   result.Error,
 		})
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"result": result,
+		"character": character,
 	})
 }
 
 func UpdateCharacter(c *fiber.Ctx) error {
 	userToken := c.Locals("jwt").(*jwt.Token)
 	claims := userToken.Claims.(jwt.MapClaims)
-	userID := claims["user_id"].(string)
+	userID := uint(claims["user_id"].(float64))
 
-	userObjectID, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
-
-	b := new(ReqCharacter)
-	if err := c.BodyParser(b); err != nil {
+	body := new(ReqCharacter)
+	if err := c.BodyParser(body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": err.Error(),
 		})
 	}
-	b.UserID = userObjectID
 
 	id := c.Params("id")
 	if id == "" {
@@ -158,38 +119,37 @@ func UpdateCharacter(c *fiber.Ctx) error {
 		})
 	}
 
-	charObjectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
+	var character model.Character
+
+	result := database.DB().Model(model.Character{}).Where("user_id = ?", userID).First(&character, id)
+	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
+			"error": result.Error,
 		})
 	}
 
-	coll := database.GetCollection("characters")
-	result, err := coll.UpdateOne(c.Context(), bson.D{{Key: "user_id", Value: userObjectID}, {Key: "_id", Value: charObjectID}}, bson.D{{Key: "$set", Value: b}})
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "failed to updated character",
-			"error":   err.Error(),
-		})
-	}
+	character.Name = body.Name
+	character.Level = body.Level
+	character.Health = body.Health
+	character.MentalHealth = body.MentalHealth
+	character.Mana = body.Mana
+	character.Race = body.Race
+	character.Gender = body.Gender
+	character.Height = body.Height
+	character.Weight = body.Weight
+	character.Dodge = body.Dodge
+
+	database.DB().Save(&character)
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"result": result,
+		"character": character,
 	})
 }
 
 func DeleteCharacter(c *fiber.Ctx) error {
 	userToken := c.Locals("jwt").(*jwt.Token)
 	claims := userToken.Claims.(jwt.MapClaims)
-	userID := claims["user_id"].(string)
-
-	userObjectID, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
+	userID := uint(claims["user_id"].(float64))
 
 	id := c.Params("id")
 	if id == "" {
@@ -198,23 +158,15 @@ func DeleteCharacter(c *fiber.Ctx) error {
 		})
 	}
 
-	charObjectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
+	result := database.DB().Unscoped().Where("id = ? AND user_id = ?", id, userID).Delete(&model.Character{})
+	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
-
-	coll := database.GetCollection("characters")
-	result, err := coll.DeleteOne(c.Context(), bson.D{{Key: "user_id", Value: userObjectID}, {Key: "_id", Value: charObjectID}})
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "failed to delete character",
-			"error":   err.Error(),
+			"message": "Failed to delete character",
+			"error":   result.Error,
 		})
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"result": result,
+		"message": "Character deleted successfully",
 	})
 }

@@ -1,9 +1,9 @@
 services:
   db:
-    image: mongo:8.0.4
+    image: postgres:17.2
     restart: unless-stopped
     container_name: sheethappens_db
     env_file:
       - ./backend/.env
     ports:
-      - "27017:27017"
+      - "5432:5432"

@@ -14,7 +14,6 @@ import (
 func main() {
 	utils.LoadEnv()
 	database.Init()
-	defer database.CloseConnection()
 
 	app := fiber.New()
 
@@ -41,12 +40,12 @@ func main() {
 	characters.Put("/:id", controller.UpdateCharacter)
 	characters.Delete("/:id", controller.DeleteCharacter)
 
-	skills := api.Group("/skills")
-	skills.Get("/", controller.GetSkills)
-	skills.Get("/:id", controller.GetSkillById)
-	skills.Post("/", middleware.JWTProtected, controller.CreateSkill)
-	skills.Put("/:id", middleware.JWTProtected, controller.UpdateSkill)
-	skills.Delete("/:id", middleware.JWTProtected, controller.DeleteSkill)
+	// skills := api.Group("/skills")
+	// skills.Get("/", controller.GetSkills)
+	// skills.Get("/:id", controller.GetSkillById)
+	// skills.Post("/", middleware.JWTProtected, controller.CreateSkill)
+	// skills.Put("/:id", middleware.JWTProtected, controller.UpdateSkill)
+	// skills.Delete("/:id", middleware.JWTProtected, controller.DeleteSkill)
 
 	app.Listen(":3000")
 }

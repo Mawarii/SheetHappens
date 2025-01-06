@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -19,11 +18,9 @@ func ComparePassword(hashedPassword, password string) bool {
 	return err == nil
 }
 
-func GenerateToken(id primitive.ObjectID) (string, error) {
-	userObjectID := primitive.ObjectID(id).Hex()
-
+func GenerateToken(id uint) (string, error) {
 	claims := jwt.MapClaims{}
-	claims["user_id"] = userObjectID
+	claims["user_id"] = id
 	claims["exp"] = time.Now().Add(24 * time.Hour).Unix()
 
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

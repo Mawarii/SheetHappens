@@ -1,66 +1,38 @@
 package database
 
 import (
-	"context"
+	"fmt"
 	"log"
 	"os"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"gitlab.com/Mawarii/sheethappens/model"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-var db *mongo.Database
-
-func GetCollection(col string) *mongo.Collection {
-	return db.Collection(col)
-}
+var db *gorm.DB
 
 func Init() {
-	uri := os.Getenv("MONGODB_URI")
-	if uri == "" {
-		log.Fatal("You must set your 'MONGODB_URI' environmental variable")
-	}
+	host := os.Getenv("POSTGRES_HOST")
+	username := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	dbName := os.Getenv("POSTGRES_DB")
+	port := os.Getenv("POSTGRES_PORT")
+	timezone := os.Getenv("TZ")
 
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(uri))
+	var err error
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=%s", host, username, password, dbName, port, timezone)
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal("Couldn't connect to the database:", err)
+		log.Fatal("Could not connection to database:", err)
 	}
 
-	db = client.Database("sheethappens")
-	if err := createUniqueIndex("users", "username"); err != nil {
-		log.Fatal("Could not create unique index 'username' for collection 'users':", err)
-	} else {
-		log.Println("Successfully created unique index 'username' for collection 'users'")
-	}
-
-	if err := createUniqueIndex("skills", "name"); err != nil {
-		log.Fatal("Could not create unique index 'name' for collection 'skills':", err)
-	} else {
-		log.Println("Successfully created unique index 'name' for collection 'skills'")
+	err = db.AutoMigrate(&model.User{}, &model.Character{})
+	if err != nil {
+		log.Fatal("Failed to run migrations:", err)
 	}
 }
 
-func createUniqueIndex(coll string, index string) error {
-	collection := db.Collection(coll)
-
-	collation := options.Collation{
-		Locale:   "en",
-		Strength: 2,
-	}
-
-	indexModel := mongo.IndexModel{
-		Keys:    bson.D{{Key: index, Value: 1}},
-		Options: options.Index().SetUnique(true).SetCollation(&collation),
-	}
-
-	_, err := collection.Indexes().CreateOne(context.Background(), indexModel)
-	return err
-}
-
-func CloseConnection() {
-	err := db.Client().Disconnect(context.Background())
-	if err != nil {
-		log.Fatal("Couldn't close the database connection:", err)
-	}
+func DB() *gorm.DB {
+	return db
 }
