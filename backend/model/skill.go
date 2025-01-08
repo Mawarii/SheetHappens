@@ -6,21 +6,23 @@ import (
 
 type Skill struct {
 	gorm.Model
-	Name        string          `gorm:"not null;unique;" json:"name"`
-	Description string          `json:"description,omitempty"`
-	Categories  []SkillCategory `gorm:"many2many:skills_skillcategories;" json:"categories"`
+	Name        string `gorm:"not null;unique;" json:"name"`
+	Description string `json:"description,omitempty"`
 }
 
 type SkillCategory struct {
 	gorm.Model
-	Name        string  `gorm:"not null;unique;" json:"name"`
-	Description string  `json:"description,omitempty"`
-	Skills      []Skill `gorm:"many2many:skills_skillcategories;" json:"skills"`
+	Name        string `gorm:"not null;unique;" json:"name"`
+	Description string `json:"description,omitempty"`
 }
 
-type CharacterSkill struct {
+type CharacterSkillCategory struct {
 	gorm.Model
-	CharacterID uint `json:"character_id"`
-	SkillID     uint `json:"skill_id"`
-	Level       uint `gorm:"not null;" json:"level"`
+	CharacterID     uint          `json:"character_id"`
+	SkillID         uint          `json:"skill_id"`
+	SkillCategoryID uint          `json:"skill_category_id"`
+	Level           uint          `gorm:"not null;" json:"level"`
+	Character       Character     `json:"character,omitempty"`
+	Skill           Skill         `json:"skill,omitempty"`
+	SkillCategory   SkillCategory `json:"skill_category,omitempty"`
 }
