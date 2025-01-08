@@ -32,6 +32,7 @@ func main() {
 	auth.Post("/register", controller.Register)
 	auth.Post("/login", controller.Login)
 	auth.Get("/logout", controller.Logout)
+	auth.Get("/info", middleware.JWTProtected, controller.GetUserInfo)
 
 	characters := api.Group("/characters", middleware.JWTProtected)
 	characters.Get("/", controller.GetCharacters)

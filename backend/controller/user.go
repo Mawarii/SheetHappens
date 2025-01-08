@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
 	"gitlab.com/Mawarii/sheethappens/database"
 	"gitlab.com/Mawarii/sheethappens/model"
 	"gitlab.com/Mawarii/sheethappens/utils"
@@ -103,4 +104,23 @@ func Logout(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"message": "logout successful",
 	})
+}
+
+func GetUserInfo(c *fiber.Ctx) error {
+	userToken := c.Locals("jwt").(*jwt.Token)
+	claims := userToken.Claims.(jwt.MapClaims)
+	userID := uint(claims["user_id"].(float64))
+
+	var user model.User
+
+	result := database.DB().Preload("Characters").First(&user, userID)
+	if result.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": result.Error,
+		})
+	}
+
+	user.Password = "REDACTED"
+
+	return c.JSON(user)
 }
