@@ -3,6 +3,7 @@
       <nav>
         <RouterLink to="/">Login</RouterLink>
         <RouterLink to="/characters">Dashboard</RouterLink>
+        <RouterLink to="/skills">Skills</RouterLink>
         <button @click="logout" class="logout-button">Logout</button>
       </nav>
   </header>

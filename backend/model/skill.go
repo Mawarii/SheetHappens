@@ -1,22 +1,26 @@
 package model
 
-// import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"gorm.io/gorm"
+)
 
-// type Skill struct {
-// 	ID          primitive.ObjectID `json:"id"                    bson:"_id"`
-// 	Name        string             `json:"name"                  bson:"name"`
-// 	Description string             `json:"description,omitempty" bson:"description,omitempty"`
-// }
+type Skill struct {
+	gorm.Model
+	Name        string          `gorm:"not null;unique;" json:"name"`
+	Description string          `json:"description,omitempty"`
+	Categories  []SkillCategory `gorm:"many2many:skills_skillcategories;" json:"categories"`
+}
 
-// type SkillCategory struct {
-// 	ID          primitive.ObjectID `json:"id"                    bson:"_id"`
-// 	Name        string             `json:"name"                  bson:"name"`
-// 	Description string             `json:"description,omitempty" bson:"description,omitempty"`
-// }
+type SkillCategory struct {
+	gorm.Model
+	Name        string  `gorm:"not null;unique;" json:"name"`
+	Description string  `json:"description,omitempty"`
+	Skills      []Skill `gorm:"many2many:skills_skillcategories;" json:"skills"`
+}
 
-// type SkillLevelPair struct {
-// 	ID          primitive.ObjectID   `json:"id"           bson:"_id"`
-// 	SkillID     primitive.ObjectID   `json:"skill_id"     bson:"skill_id"`
-// 	Level       uint                 `json:"level"        bson:"level"`
-// 	CategoryIDs []primitive.ObjectID `json:"category_ids" bson:"category_ids"`
-// }
+type CharacterSkill struct {
+	gorm.Model
+	CharacterID uint `json:"character_id"`
+	SkillID     uint `json:"skill_id"`
+	Level       uint `gorm:"not null;" json:"level"`
+}

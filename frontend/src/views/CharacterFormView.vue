@@ -15,32 +15,24 @@
       <div>
         <h3>Skills</h3>
         <div v-for="(skills, category) in character.skills" :key="category">
-          {{ category }}
-          <div v-for="(_, skill) in skills" :key="skill">
-            <span>{{ skill }}: </span>
-            <input v-model.number="character.skills[category][skill]" type="number" min="0" />
-            <button type="button" @click="removeSkill(String(category), String(skill))">Remove</button>
+          <h4>{{ category }}</h4>
+          <div v-for="skill in skills" :key="skill['id']">
+            <span>{{ getSkillNameById(skill['skill_id']) }}: </span>
+            <input v-model.number="skill['value']" type="number" min="0" />
+            <br />
+            <!-- <input v-model.number="character.skills[category][skillid]" type="number" min="0" /> -->
           </div>
         </div>
-        <div>
-          <input v-model="newSkillCategory" placeholder="Category" />
-          <input v-model="newSkillName" placeholder="Skill" />
-          <input v-model.number="newSkillValue" type="number" placeholder="Value" min="0" />
-          <button type="button" @click="addSkill()">Add Skill</button>
-        </div>
-      </div>
-      <div>
-        <h3>Craft</h3>
-        <div v-for="(_, craft) in character.craft" :key="craft">
-          {{ craft }}: 
-            <input v-model.number="character.craft[craft]" type="number" min="0" />
-            <button type="button" @click="removeCraft(String(craft))">Remove</button>
-        </div>
-        <div>
-          <input v-model="newCraftName" placeholder="Craft" />
-          <input v-model.number="newCraftValue" type="number" placeholder="Value" min="0" />
-          <button type="button" @click="addCraft()">Add Craft</button>
-        </div>
+        <h5>Category</h5>
+        <p><input v-model="skillCategory" placeholder="category" /></p>
+        <select v-model="selectedSkill">
+          <option disabled value="">Please select one</option>
+          <option v-for="skill in allSkills" :key="skill['id']" :value="skill['id']">
+            {{ skill['name'] }}
+          </option>
+        </select>
+        <p><input v-model="skillValue" placeholder="value" /></p>
+        <button type="button" @click="addSkill">Add Skill</button>
       </div>
       <button type="submit">{{ editMode ? 'Save Changes' : 'Create Character' }}</button>
     </form>
@@ -49,57 +41,42 @@
 
 <script setup lang="ts">
 import fetchWithRedirect from '@/utils/fetchWithRedirect';
+import { CoAral } from 'oh-vue-icons/icons';
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from "vue-router";
 
 const character = ref<any>({
-  skills: {},
-  craft: {}
+  skills: {}
 });
-
-const newSkillCategory = ref('');
-const newSkillName = ref('');
-const newSkillValue = ref(0);
-const newCraftName = ref('');
-const newCraftValue = ref(0);
+const allSkills = ref<any>({});
+const skillCategory = ref("");
+const skillValue = ref(0);
+const selectedSkill = ref("");
 const router = useRouter();
 const route = useRoute();
 const editMode = route.params.id;
 
+const getSkillNameById = (skillId: string) => {
+  const skill = allSkills.value.find((s: { id: string }) => s.id === skillId);
+  return skill ? skill.name : "Unknown Skill";
+};
+
 const addSkill = () => {
-  if (newSkillCategory.value && newSkillName.value) {
-    if (!character.value.skills[newSkillCategory.value]) {
-      character.value.skills[newSkillCategory.value] = {};
+  if (!character.value.skills) {
+    character.value.skills = {};
+  }
+  if (skillCategory.value && selectedSkill.value) {
+    if (!character.value.skills[skillCategory.value]) {
+      character.value.skills[skillCategory.value] = [];
     }
-    character.value.skills[newSkillCategory.value][newSkillName.value] = newSkillValue.value;
-    newSkillName.value = '';
-    newSkillValue.value = 0;
-  }
-};
 
-const removeSkill = (category: string, skill: string) => {
-  if (character.value.skills[category]) {
-    delete character.value.skills[category][skill];
-    if (Object.keys(character.value.skills[category]).length === 0) {
-      delete character.value.skills[category];
-    }
-  }
-};
+    character.value.skills[skillCategory.value].push({
+      skill_id: selectedSkill.value,
+      value: skillValue.value
+    });
 
-const addCraft = () => {
-  if (!character.value.craft) {
-    character.value.craft = {};
-  }
-  if (newCraftName.value) {
-    character.value.craft[newCraftName.value] = newCraftValue.value;
-    newCraftName.value = '';
-    newCraftValue.value = 0;
-  }
-};
-
-const removeCraft = (craft: string) => {
-  if (character.value.craft[craft]) {
-    delete character.value.craft[craft];
+    selectedSkill.value = '';
+    skillValue.value = 0;
   }
 };
 
@@ -114,8 +91,9 @@ const createCharacter = async () => {
     });
     if (response.ok) {
       const data = await response.json()
-      const id = data.result["InsertedID"]
-      router.push(`/characters/${id}`);
+      console.log(data);
+      // const id = data.result["InsertedID"]
+      // router.push(`/characters/${id}`);
     } else {
       console.error("Character creation failed");
     }
@@ -127,6 +105,7 @@ const createCharacter = async () => {
 const updateCharacter = async () => {
   try {
     const id = route.params.id;
+    console.log(character.value)
     const response = await fetchWithRedirect(`http://localhost:3000/api/characters/${id}`, {
       method: "PUT",
       headers: {
@@ -161,7 +140,20 @@ const fetchCharacter = async () => {
   }
 }
 
+const fetchSkills = async () => {
+  try {
+    const res = await fetchWithRedirect("http://localhost:3000/api/skills", {
+      method: "GET",
+    });
+    const data = await res.json();
+    allSkills.value = data.skills;
+  } catch (error) {
+    console.error('Error fetching skills:', error);
+  }
+};
+
 if (editMode) {
   onMounted(fetchCharacter)
 }
+onMounted(fetchSkills)
 </script>
