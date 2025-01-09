@@ -48,17 +48,24 @@ func GetCharacterById(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(character)
 }
 
+type ReqCharacterSkill struct {
+	SkillID         uint `json:"skill_id"`
+	SkillCategoryID uint `json:"skill_category_id"`
+	Level           uint `gorm:"not null;" json:"level"`
+}
+
 type ReqCharacter struct {
-	Name         string `gorm:"not null;" json:"name"`
-	Level        uint   `json:"level,omitempty"`
-	Health       int    `json:"health,omitempty"`
-	MentalHealth int    `json:"mental_health,omitempty"`
-	Mana         uint   `json:"mana,omitempty"`
-	Race         string `json:"race,omitempty"`
-	Gender       string `json:"gender,omitempty"`
-	Height       string `json:"height,omitempty"`
-	Weight       string `json:"weight,omitempty"`
-	Dodge        uint   `json:"dodge,omitempty"`
+	Name         string              `gorm:"not null;" json:"name"`
+	Level        uint                `json:"level,omitempty"`
+	Health       int                 `json:"health,omitempty"`
+	MentalHealth int                 `json:"mental_health,omitempty"`
+	Mana         uint                `json:"mana,omitempty"`
+	Race         string              `json:"race,omitempty"`
+	Gender       string              `json:"gender,omitempty"`
+	Height       string              `json:"height,omitempty"`
+	Weight       string              `json:"weight,omitempty"`
+	Dodge        uint                `json:"dodge,omitempty"`
+	Skills       []ReqCharacterSkill `json:"skills,omitempty"`
 }
 
 func CreateCharacter(c *fiber.Ctx) error {
@@ -92,6 +99,26 @@ func CreateCharacter(c *fiber.Ctx) error {
 			"message": "Failed to create character",
 			"error":   result.Error,
 		})
+	}
+
+	if len(body.Skills) > 0 {
+		var characterSkills []model.CharacterSkillCategory
+		for _, skill := range body.Skills {
+			characterSkills = append(characterSkills, model.CharacterSkillCategory{
+				CharacterID:     character.ID,
+				SkillID:         skill.SkillID,
+				SkillCategoryID: skill.SkillCategoryID,
+				Level:           skill.Level,
+			})
+		}
+
+		result = database.DB().Model(model.CharacterSkillCategory{}).Create(&characterSkills)
+		if result.Error != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Failed to create character skills",
+				"error":   result.Error,
+			})
+		}
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
@@ -175,8 +202,3 @@ func DeleteCharacter(c *fiber.Ctx) error {
 		"message": "Character deleted successfully",
 	})
 }
-
-// func createCharacterSkillCategory(characterID uint, skillID uint, categoryID uint) error {
-
-// 	return nil
-// }
