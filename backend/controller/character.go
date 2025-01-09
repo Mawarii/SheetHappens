@@ -176,3 +176,8 @@ func DeleteCharacter(c *fiber.Ctx) error {
 		"message": "Character deleted successfully",
 	})
 }
+
+// func createCharacterSkillCategory(characterID uint, skillID uint, categoryID uint) error {
+
+// 	return nil
+// }

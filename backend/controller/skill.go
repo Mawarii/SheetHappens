@@ -1,152 +1,261 @@
 package controller
 
-// import (
-// 	"github.com/gofiber/fiber/v2"
-// 	"gitlab.com/Mawarii/sheethappens/database"
-// 	"gitlab.com/Mawarii/sheethappens/model"
-// 	"go.mongodb.org/mongo-driver/bson"
-// 	"go.mongodb.org/mongo-driver/bson/primitive"
-// )
+import (
+	"github.com/gofiber/fiber/v2"
+	"gitlab.com/Mawarii/sheethappens/database"
+	"gitlab.com/Mawarii/sheethappens/model"
+)
 
-// func GetSkills(c *fiber.Ctx) error {
-// 	coll := database.GetCollection("skills")
-// 	cursor, err := coll.Find(c.Context(), bson.D{{}})
-// 	if err != nil {
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-// 			"error": err.Error(),
-// 		})
-// 	}
+func GetSkills(c *fiber.Ctx) error {
+	var skills []model.Skill
 
-// 	var skills []model.Skill
+	result := database.DB().Model(model.Skill{}).Find(&skills)
 
-// 	if err = cursor.All(c.Context(), &skills); err != nil {
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-// 			"error": err.Error(),
-// 		})
-// 	}
+	if result.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": result.Error,
+		})
+	}
 
-// 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-// 		"skills": skills,
-// 	})
-// }
+	return c.Status(fiber.StatusOK).JSON(skills)
+}
 
-// func GetSkillById(c *fiber.Ctx) error {
-// 	id := c.Params("id")
-// 	if id == "" {
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-// 			"error": "id is required",
-// 		})
-// 	}
+func GetSkillById(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "id is required",
+		})
+	}
 
-// 	skillObjectID, err := primitive.ObjectIDFromHex(id)
-// 	if err != nil {
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-// 			"error": err.Error(),
-// 		})
-// 	}
+	var skill model.Skill
 
-// 	skill := model.Skill{}
-// 	coll := database.GetCollection("skills")
-// 	err = coll.FindOne(c.Context(), bson.D{{Key: "_id", Value: skillObjectID}}).Decode(&skill)
-// 	if err != nil {
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-// 			"error": err.Error(),
-// 		})
-// 	}
+	result := database.DB().Model(model.Skill{}).First(&skill, id)
 
-// 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-// 		"skill": skill,
-// 	})
-// }
+	if result.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": result.Error,
+		})
+	}
 
-// type ReqSkill struct {
-// 	Name        string `json:"name"                  bson:"name"`
-// 	Description string `json:"description,omitempty" bson:"description,omitempty"`
-// }
+	return c.Status(fiber.StatusOK).JSON(skill)
+}
 
-// func CreateSkill(c *fiber.Ctx) error {
-// 	b := new(ReqSkill)
-// 	if err := c.BodyParser(b); err != nil {
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-// 			"error": err.Error(),
-// 		})
-// 	}
+type ReqSkill struct {
+	Name        string `json:"name"                  bson:"name"`
+	Description string `json:"description,omitempty" bson:"description,omitempty"`
+}
 
-// 	coll := database.GetCollection("skills")
-// 	result, err := coll.InsertOne(c.Context(), b)
-// 	if err != nil {
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-// 			"message": "failed to create skill",
-// 			"error":   err.Error(),
-// 		})
-// 	}
+func CreateSkill(c *fiber.Ctx) error {
+	body := new(ReqSkill)
+	if err := c.BodyParser(body); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
 
-// 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-// 		"result": result,
-// 	})
-// }
+	var skill model.Skill
+	skill.Name = body.Name
+	skill.Description = body.Description
 
-// func UpdateSkill(c *fiber.Ctx) error {
-// 	b := new(ReqSkill)
-// 	if err := c.BodyParser(b); err != nil {
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-// 			"error": err.Error(),
-// 		})
-// 	}
+	result := database.DB().Create(&skill)
+	if result.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to create skill",
+			"error":   result.Error,
+		})
+	}
 
-// 	id := c.Params("id")
-// 	if id == "" {
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-// 			"error": "id is required",
-// 		})
-// 	}
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"skill": skill,
+	})
+}
 
-// 	skillObjectID, err := primitive.ObjectIDFromHex(id)
-// 	if err != nil {
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-// 			"error": err.Error(),
-// 		})
-// 	}
+func UpdateSkill(c *fiber.Ctx) error {
+	body := new(ReqSkill)
+	if err := c.BodyParser(body); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
 
-// 	coll := database.GetCollection("skills")
-// 	result, err := coll.UpdateOne(c.Context(), bson.D{{Key: "_id", Value: skillObjectID}}, bson.D{{Key: "$set", Value: b}})
-// 	if err != nil {
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-// 			"message": "failed to updated skill",
-// 			"error":   err.Error(),
-// 		})
-// 	}
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "id is required",
+		})
+	}
 
-// 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-// 		"result": result,
-// 	})
-// }
+	var skill model.Skill
 
-// func DeleteSkill(c *fiber.Ctx) error {
-// 	id := c.Params("id")
-// 	if id == "" {
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-// 			"error": "id is required",
-// 		})
-// 	}
+	result := database.DB().Model(model.Skill{}).First(&skill, id)
+	if result.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": result.Error,
+		})
+	}
 
-// 	skillObjectID, err := primitive.ObjectIDFromHex(id)
-// 	if err != nil {
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-// 			"error": err.Error(),
-// 		})
-// 	}
+	skill.Name = body.Name
+	skill.Description = body.Description
 
-// 	coll := database.GetCollection("skills")
-// 	result, err := coll.DeleteOne(c.Context(), bson.D{{Key: "_id", Value: skillObjectID}})
-// 	if err != nil {
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-// 			"message": "failed to delete skill",
-// 			"error":   err.Error(),
-// 		})
-// 	}
+	database.DB().Save(&skill)
 
-// 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-// 		"result": result,
-// 	})
-// }
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"skill": skill,
+	})
+}
+
+func DeleteSkill(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "id is required",
+		})
+	}
+
+	result := database.DB().Unscoped().Delete(&model.Skill{}, id)
+	if result.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to delete skill",
+			"error":   result.Error,
+		})
+	}
+
+	if result.RowsAffected == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Skill already deleted",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Skill deleted successfully",
+	})
+}
+
+// Skill Categories
+
+func GetSkillCategories(c *fiber.Ctx) error {
+	var categories []model.SkillCategory
+
+	result := database.DB().Model(model.SkillCategory{}).Find(&categories)
+
+	if result.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": result.Error,
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(categories)
+}
+
+func GetSkillCategoryById(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "id is required",
+		})
+	}
+
+	var category model.SkillCategory
+
+	result := database.DB().Model(model.SkillCategory{}).First(&category, id)
+
+	if result.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": result.Error,
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(category)
+}
+
+type ReqSkillCategory struct {
+	Name        string `json:"name"                  bson:"name"`
+	Description string `json:"description,omitempty" bson:"description,omitempty"`
+}
+
+func CreateSkillCategory(c *fiber.Ctx) error {
+	body := new(ReqSkill)
+	if err := c.BodyParser(body); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	var category model.Skill
+	category.Name = body.Name
+	category.Description = body.Description
+
+	result := database.DB().Create(&category)
+	if result.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to create skill category",
+			"error":   result.Error,
+		})
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"category": category,
+	})
+}
+
+func UpdateSkillCategory(c *fiber.Ctx) error {
+	body := new(ReqSkill)
+	if err := c.BodyParser(body); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "id is required",
+		})
+	}
+
+	var category model.SkillCategory
+
+	result := database.DB().Model(model.SkillCategory{}).First(&category, id)
+	if result.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": result.Error,
+		})
+	}
+
+	category.Name = body.Name
+	category.Description = body.Description
+
+	database.DB().Save(&category)
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"category": category,
+	})
+}
+
+func DeleteSkillCategory(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "id is required",
+		})
+	}
+
+	result := database.DB().Unscoped().Delete(&model.SkillCategory{}, id)
+	if result.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to delete skill category",
+			"error":   result.Error,
+		})
+	}
+
+	if result.RowsAffected == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Skill category already deleted",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Skill category deleted successfully",
+	})
+}
