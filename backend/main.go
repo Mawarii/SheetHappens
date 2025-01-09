@@ -41,12 +41,17 @@ func main() {
 	characters.Put("/:id", controller.UpdateCharacter)
 	characters.Delete("/:id", controller.DeleteCharacter)
 
-	// skills := api.Group("/skills")
-	// skills.Get("/", controller.GetSkills)
-	// skills.Get("/:id", controller.GetSkillById)
-	// skills.Post("/", middleware.JWTProtected, controller.CreateSkill)
-	// skills.Put("/:id", middleware.JWTProtected, controller.UpdateSkill)
-	// skills.Delete("/:id", middleware.JWTProtected, controller.DeleteSkill)
+	skills := api.Group("/skills")
+	skills.Get("/", controller.GetSkills)
+	skills.Get("/:id", controller.GetSkillById)
+	skills.Post("/", middleware.JWTProtected, controller.CreateSkill)
+	skills.Put("/:id", middleware.JWTProtected, controller.UpdateSkill)
+	skills.Delete("/:id", middleware.JWTProtected, controller.DeleteSkill)
+	skills.Get("/categories", controller.GetSkillCategories)
+	skills.Get("/categories/:id", controller.GetSkillCategoryById)
+	skills.Post("/categories", middleware.JWTProtected, controller.CreateSkillCategory)
+	skills.Put("/categories/:id", middleware.JWTProtected, controller.UpdateSkillCategory)
+	skills.Delete("/categories/:id", middleware.JWTProtected, controller.DeleteSkillCategory)
 
 	app.Listen(":3000")
 }
