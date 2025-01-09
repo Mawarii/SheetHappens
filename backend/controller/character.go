@@ -15,7 +15,6 @@ func GetCharacters(c *fiber.Ctx) error {
 	var characters []model.Character
 
 	result := database.DB().Model(model.Character{}).Where("user_id = ?", userID).Find(&characters)
-
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": result.Error,
@@ -158,7 +157,7 @@ func DeleteCharacter(c *fiber.Ctx) error {
 		})
 	}
 
-	result := database.DB().Unscoped().Where("id = ? AND user_id = ?", id, userID).Delete(&model.Character{})
+	result := database.DB().Unscoped().Where("user_id = ?", userID).Delete(&model.Character{}, id)
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "Failed to delete character",

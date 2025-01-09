@@ -10,7 +10,6 @@ func GetSkills(c *fiber.Ctx) error {
 	var skills []model.Skill
 
 	result := database.DB().Model(model.Skill{}).Find(&skills)
-
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": result.Error,
@@ -31,7 +30,6 @@ func GetSkillById(c *fiber.Ctx) error {
 	var skill model.Skill
 
 	result := database.DB().Model(model.Skill{}).First(&skill, id)
-
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": result.Error,
@@ -138,7 +136,6 @@ func GetSkillCategories(c *fiber.Ctx) error {
 	var categories []model.SkillCategory
 
 	result := database.DB().Model(model.SkillCategory{}).Find(&categories)
-
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": result.Error,
@@ -159,7 +156,6 @@ func GetSkillCategoryById(c *fiber.Ctx) error {
 	var category model.SkillCategory
 
 	result := database.DB().Model(model.SkillCategory{}).First(&category, id)
-
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": result.Error,
