@@ -7,7 +7,7 @@
     </h1>
     <form v-if="character">
       <div v-for="(value, key) in character" :key="key">
-        <div v-if="!['id', 'name', 'user_id', 'skills', 'craft'].includes(String(key)) && value">
+        <div v-if="!['ID', 'name', 'user_id', 'skills', 'craft'].includes(String(key)) && value">
           <span :class="key" class="key">{{ capitalizeFirstLetter(String(key)) }}: </span><span class="value">{{ value }}</span>
         </div>
         <div v-if="String(key) === 'skills'">

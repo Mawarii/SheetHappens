@@ -2,9 +2,9 @@
   <div class="dashboard">
     <h1>Characters <button class="add-btn" @click="createCharacter" type="button"><OhVueIcon name="px-plus" scale="1.5" /></button></h1>
     <div v-if="characters" class="character-list">
-      <div v-for="char in characters" :key="char['id']" @click="goToCharacterDetail(char['id'])" class="character-item">
+      <div v-for="char in characters" :key="char['ID']" @click="goToCharacterDetail(char['ID'])" class="character-item">
         <span class="char-name">{{ char['name'] }}</span>
-        <button class="delete-btn" @click.stop="confirmDelete(char['id'])" type="button">
+        <button class="delete-btn" @click.stop="confirmDelete(char['ID'])" type="button">
           <OhVueIcon name="bi-trash-fill" />
         </button>
       </div>

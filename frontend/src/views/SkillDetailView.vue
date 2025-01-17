@@ -7,7 +7,7 @@
     </h1>
     <form v-if="skill">
       <div v-for="(value, key) in skill" :key="key">
-        <div v-if="!['id', 'name'].includes(String(key)) && value">
+        <div v-if="!['ID', 'name'].includes(String(key)) && value">
           <span :class="key" class="key">{{ capitalizeFirstLetter(String(key)) }}: </span><span class="value">{{ value }}</span>
         </div>
       </div>
@@ -38,7 +38,7 @@ try {
         credentials: 'include',
       });
       const data = await res.json();
-      skill.value = data.skill;
+      skill.value = data;
   } catch (error) {
     console.error('Error fetching skill:', error);
   }

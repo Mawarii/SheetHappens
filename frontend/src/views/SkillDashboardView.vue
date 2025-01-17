@@ -2,9 +2,9 @@
   <div class="dashboard">
     <h1>Skills <button class="add-btn" @click="createSkill" type="button"><OhVueIcon name="px-plus" scale="1.5" /></button></h1>
     <div v-if="skills" class="skill-list">
-      <div v-for="skill in skills" :key="skill['id']" @click="goToSkillDetail(skill['id'])" class="skill-item">
+      <div v-for="skill in skills" :key="skill['ID']" @click="goToSkillDetail(skill['ID'])" class="skill-item">
         <span class="skill-name">{{ skill['name'] }}</span>
-        <button class="delete-btn" @click.stop="confirmDelete(skill['id'])" type="button">
+        <button class="delete-btn" @click.stop="confirmDelete(skill['ID'])" type="button">
           <OhVueIcon name="bi-trash-fill" />
         </button>
       </div>
@@ -45,7 +45,7 @@ const fetchSkills = async () => {
       method: "GET",
     });
     const data = await res.json();
-    skills.value = data.skills;
+    skills.value = data;
   } catch (error) {
     console.error('Error fetching skills:', error);
   }

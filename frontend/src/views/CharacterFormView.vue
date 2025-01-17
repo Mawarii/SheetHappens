@@ -16,7 +16,7 @@
         <h3>Skills</h3>
         <div v-for="(skills, category) in character.skills" :key="category">
           <h4>{{ category }}</h4>
-          <div v-for="skill in skills" :key="skill['id']">
+          <div v-for="skill in skills" :key="skill['ID']">
             <span>{{ getSkillNameById(skill['skill_id']) }}: </span>
             <input v-model.number="skill['value']" type="number" min="0" />
             <br />
@@ -27,7 +27,7 @@
         <p><input v-model="skillCategory" placeholder="category" /></p>
         <select v-model="selectedSkill">
           <option disabled value="">Please select one</option>
-          <option v-for="skill in allSkills" :key="skill['id']" :value="skill['id']">
+          <option v-for="skill in allSkills" :key="skill['ID']" :value="skill['ID']">
             {{ skill['name'] }}
           </option>
         </select>
