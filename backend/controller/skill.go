@@ -178,7 +178,7 @@ func CreateSkillCategory(c *fiber.Ctx) error {
 		})
 	}
 
-	var category model.Skill
+	var category model.SkillCategory
 	category.Name = body.Name
 	category.Description = body.Description
 

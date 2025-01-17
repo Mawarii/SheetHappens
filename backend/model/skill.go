@@ -18,11 +18,8 @@ type SkillCategory struct {
 
 type CharacterSkillCategory struct {
 	gorm.Model
-	CharacterID     uint          `json:"character_id"`
-	SkillID         uint          `json:"skill_id"`
-	SkillCategoryID uint          `json:"skill_category_id"`
-	Level           uint          `gorm:"not null;" json:"level"`
-	Character       Character     `json:"character,omitempty"`
-	Skill           Skill         `json:"skill,omitempty"`
-	SkillCategory   SkillCategory `json:"skill_category,omitempty"`
+	CharacterID     uint `gorm:"uniqueIndex:idx_character_skill_category" json:"character_id"`
+	SkillID         uint `gorm:"uniqueIndex:idx_character_skill_category" json:"skill_id"`
+	SkillCategoryID uint `gorm:"uniqueIndex:idx_character_skill_category" json:"skill_category_id"`
+	Level           uint `gorm:"not null;"                                json:"level"`
 }

@@ -14,7 +14,7 @@ func GetCharacters(c *fiber.Ctx) error {
 
 	var characters []model.Character
 
-	result := database.DB().Model(model.Character{}).Where("user_id = ?", userID).Find(&characters)
+	result := database.DB().Where("user_id = ?", userID).Preload("Skills").Find(&characters)
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": result.Error,
