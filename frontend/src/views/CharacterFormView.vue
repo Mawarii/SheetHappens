@@ -3,37 +3,23 @@
     <h1>{{ editMode ? 'Edit Character' : 'Create New Character' }}</h1>
     <form @submit.prevent="editMode ? updateCharacter() : createCharacter()">
       <p>Name: <input v-model="character.name" placeholder="name" /></p>
-      <p>Level: <input v-model="character.level" placeholder="level" type="number" /></p>
-      <p>Health: <input v-model="character.health" placeholder="health" type="number" /></p>
-      <p>Mental Health: <input v-model="character.mentalhealth" placeholder="mental health" type="number"/></p>
-      <p>Mana: <input v-model="character.mana" placeholder="mana" type="number"/></p>
-      <p>Race: <input v-model="character.race" placeholder="race" /></p>
-      <p>Gender: <input v-model="character.gender" placeholder="gender" /></p>
-      <p>Height: <input v-model="character.height" placeholder="height" /></p>
-      <p>Weight: <input v-model="character.weight" placeholder="weight" /></p>
-      <p>Dodge: <input v-model="character.dodge" placeholder="dodge" type="number" /></p>
-      <div>
-        <h3>Skills</h3>
-        <div v-for="(skills, category) in character.skills" :key="category">
-          <h4>{{ category }}</h4>
-          <div v-for="skill in skills" :key="skill['ID']">
-            <span>{{ getSkillNameById(skill['skill_id']) }}: </span>
-            <input v-model.number="skill['value']" type="number" min="0" />
-            <br />
-            <!-- <input v-model.number="character.skills[category][skillid]" type="number" min="0" /> -->
-          </div>
-        </div>
-        <h5>Category</h5>
-        <p><input v-model="skillCategory" placeholder="category" /></p>
-        <select v-model="selectedSkill">
-          <option disabled value="">Please select one</option>
-          <option v-for="skill in allSkills" :key="skill['ID']" :value="skill['ID']">
-            {{ skill['name'] }}
-          </option>
-        </select>
-        <p><input v-model="skillValue" placeholder="value" /></p>
-        <button type="button" @click="addSkill">Add Skill</button>
+      <p>System: <select v-model="selectedSystem" @change="loadTemplate">
+                  <option value="selfmade">Selfmade</option>
+                  <option value="dnd5e">D&D 5e</option>
+                  <option value="cthulhu">Call of Cthulhu</option>
+                </select></p>
+
+      <div v-for="(value, key) in character.data" :key="key">
+        <label>{{ key }}:</label>
+        <input v-model="character.data[key]" />
       </div>
+
+      <div v-if="selectedSystem === 'selfmade'">
+        <input v-model="newFieldKey" placeholder="Field name" />
+        <input v-model="newFieldValue" placeholder="Field value" />
+        <button type="button" @click="addField">Add Field</button>
+      </div>
+
       <button type="submit">{{ editMode ? 'Save Changes' : 'Create Character' }}</button>
     </form>
   </div>
@@ -45,38 +31,43 @@ import { CoAral } from 'oh-vue-icons/icons';
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from "vue-router";
 
-const character = ref<any>({
-  skills: {}
-});
-const allSkills = ref<any>({});
-const skillCategory = ref("");
-const skillValue = ref(0);
-const selectedSkill = ref("");
+const character = ref<any>({});
 const router = useRouter();
 const route = useRoute();
 const editMode = route.params.id;
-
-const getSkillNameById = (skillId: string) => {
-  const skill = allSkills.value.find((s: { id: string }) => s.id === skillId);
-  return skill ? skill.name : "Unknown Skill";
+const selectedSystem = ref('');
+const templates = {
+  dnd5e: {
+    health: 10,
+    mana: 5,
+    strength: 15,
+    dexterity: 14,
+  },
+  cthulhu: {
+    sanity: 70,
+    strength: 40,
+    intelligence: 60,
+  },
 };
 
-const addSkill = () => {
-  if (!character.value.skills) {
-    character.value.skills = {};
+const loadTemplate = () => {
+  if (selectedSystem.value === 'selfmade') {
+    character.data = {};
+  } else {
+    character.value.data = { ...templates[selectedSystem.value] };
   }
-  if (skillCategory.value && selectedSkill.value) {
-    if (!character.value.skills[skillCategory.value]) {
-      character.value.skills[skillCategory.value] = [];
-    }
+  character.value.system = selectedSystem.value;
+};
 
-    character.value.skills[skillCategory.value].push({
-      skill_id: selectedSkill.value,
-      value: skillValue.value
-    });
+const newFieldKey = ref('');
+const newFieldValue = ref('');
 
-    selectedSkill.value = '';
-    skillValue.value = 0;
+const addField = () => {
+  if (newFieldKey.value) {
+    if (!character.value.data) character.value.data = {};
+    character.value.data[newFieldKey.value] = newFieldValue.value;
+    newFieldKey.value = '';
+    newFieldValue.value = '';
   }
 };
 
@@ -92,8 +83,6 @@ const createCharacter = async () => {
     if (response.ok) {
       const data = await response.json()
       console.log(data);
-      // const id = data.result["InsertedID"]
-      // router.push(`/characters/${id}`);
     } else {
       console.error("Character creation failed");
     }
@@ -131,7 +120,8 @@ const fetchCharacter = async () => {
     });
     if (response.ok) {
       const data = await response.json();
-      character.value = data.character;
+      character.value = data;
+      selectedSystem.value = data.system;
     } else {
       console.error("Failed to fetch Character");
     }
@@ -140,20 +130,7 @@ const fetchCharacter = async () => {
   }
 }
 
-const fetchSkills = async () => {
-  try {
-    const res = await fetchWithRedirect("http://localhost:3000/api/skills", {
-      method: "GET",
-    });
-    const data = await res.json();
-    allSkills.value = data.skills;
-  } catch (error) {
-    console.error('Error fetching skills:', error);
-  }
-};
-
 if (editMode) {
   onMounted(fetchCharacter)
 }
-onMounted(fetchSkills)
 </script>

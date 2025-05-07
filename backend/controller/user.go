@@ -41,7 +41,8 @@ func Register(c *fiber.Ctx) error {
 
 	if result.Error != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": result.Error,
+			"error":   "Failed to register user",
+			"details": result.Error.Error(),
 		})
 	}
 
@@ -54,7 +55,8 @@ func Login(c *fiber.Ctx) error {
 	body := new(authRequest)
 	if err := c.BodyParser(body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": err.Error(),
+			"error":   "Error during login",
+			"details": err.Error(),
 		})
 	}
 
@@ -62,13 +64,13 @@ func Login(c *fiber.Ctx) error {
 	result := database.DB().Where("username = LOWER(?)", body.Username).First(&user)
 	if result.Error != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "invalid credentials",
+			"error": "invalid username or credentials",
 		})
 	}
 
 	if !utils.ComparePassword(user.Password, body.Password) {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "invalid credentials",
+			"error": "invalid username or credentials",
 		})
 	}
 
@@ -88,7 +90,7 @@ func Login(c *fiber.Ctx) error {
 	})
 
 	return c.JSON(fiber.Map{
-		"message": "login successful",
+		"status": "login successful",
 	})
 }
 
@@ -102,25 +104,28 @@ func Logout(c *fiber.Ctx) error {
 	})
 
 	return c.JSON(fiber.Map{
-		"message": "logout successful",
+		"status": "logout successful",
 	})
 }
 
 func GetUserInfo(c *fiber.Ctx) error {
 	userToken := c.Locals("jwt").(*jwt.Token)
 	claims := userToken.Claims.(jwt.MapClaims)
-	userID := uint(claims["user_id"].(float64))
+	userID := claims["user_id"]
 
 	var user model.User
 
-	result := database.DB().Preload("Characters").First(&user, userID)
+	result := database.DB().Preload("Characters").Where("id = ?", userID).First(&user)
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": result.Error,
+			"error":   "Failed to get user info",
+			"details": result.Error.Error(),
 		})
 	}
 
 	user.Password = "REDACTED"
 
-	return c.JSON(user)
+	return c.JSON(fiber.Map{
+		"username": user.Username,
+	})
 }

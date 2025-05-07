@@ -7,23 +7,8 @@
     </h1>
     <form v-if="character">
       <div v-for="(value, key) in character" :key="key">
-        <div v-if="!['ID', 'name', 'user_id', 'skills', 'craft'].includes(String(key)) && value">
+        <div v-if="!['ID', 'name', 'user_id'].includes(String(key)) && value">
           <span :class="key" class="key">{{ capitalizeFirstLetter(String(key)) }}: </span><span class="value">{{ value }}</span>
-        </div>
-        <div v-if="String(key) === 'skills'">
-          {{ capitalizeFirstLetter(String(key)) }}:
-          <div v-for="(skills, category) in value" :key="category">
-            {{ category }}
-            <div v-for="(skillValue, skill) in skills" :key="skill">
-              <span>{{ skill }}: {{ skillValue }}</span>
-            </div>
-          </div>
-        </div>
-        <div v-if="String(key) === 'craft'">
-          {{ capitalizeFirstLetter(String(key)) }}
-          <div v-for="(craftValue, craft) in value" :key="craft">
-            <span>{{ craft }}: {{ craftValue }}</span>
-          </div>
         </div>
       </div>
     </form>
@@ -53,7 +38,7 @@ try {
         credentials: 'include',
       });
       const data = await res.json();
-      character.value = data.character;
+      character.value = data;
   } catch (error) {
     console.error('Error fetching character:', error);
   }

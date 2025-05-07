@@ -45,7 +45,7 @@ const fetchCharacters = async () => {
       method: "GET",
     });
     const data = await res.json();
-    characters.value = data.characters;
+    characters.value = data;
   } catch (error) {
     console.error('Error fetching characters:', error);
   }

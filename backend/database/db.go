@@ -27,7 +27,7 @@ func Init() {
 		log.Fatal("Could not connection to database:", err)
 	}
 
-	err = db.AutoMigrate(&model.User{}, &model.Character{}, &model.Skill{}, &model.SkillCategory{}, &model.CharacterSkillCategory{})
+	err = db.AutoMigrate(&model.User{}, &model.Character{})
 	if err != nil {
 		log.Fatal("Failed to run migrations:", err)
 	}

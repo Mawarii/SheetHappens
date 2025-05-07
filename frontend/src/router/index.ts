@@ -4,9 +4,6 @@ import Register from '../views/RegisterView.vue'
 import CharacterDashboard from '../views/CharacterDashboardView.vue'
 import CharacterDetail from '../views/CharacterDetailView.vue'
 import CharacterForm from '../views/CharacterFormView.vue'
-import SkillDashboard from '@/views/SkillDashboardView.vue'
-import SkillDetail from '@/views/SkillDetailView.vue'
-import SkillForm from '@/views/SkillFormView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,26 +37,6 @@ const router = createRouter({
       path: "/characters/create",
       name: "CharacterCreate",
       component: CharacterForm,
-    },
-    {
-      path: "/skills",
-      name: "SkillDashboard",
-      component: SkillDashboard,
-    },
-    {
-      path: "/skills/:id",
-      name: "SkillDetail",
-      component: SkillDetail,
-    },
-    {
-      path: "/skills/:id/edit",
-      name: "SkillEdit",
-      component: SkillForm,
-    },
-    {
-      path: "/skills/create",
-      name: "SkillCreate",
-      component: SkillForm,
     },
   ],
 })
