@@ -31,10 +31,17 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	body.Username = strings.ToLower(body.Username)
+	password, err := utils.GeneratePassword(body.Password)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   "Failed to register user",
+			"details": err.Error(),
+		})
+	}
 
 	var user = model.User{
 		Username: body.Username,
-		Password: utils.GeneratePassword(body.Password),
+		Password: password,
 	}
 
 	result := database.DB().Create(&user)
