@@ -12,8 +12,8 @@ import (
 )
 
 type authRequest struct {
-	Username string `gorm:"not null;unique;"  json:"username"`
-	Password string `gorm:"not null;"         json:"password"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 func Register(c *fiber.Ctx) error {
@@ -47,7 +47,8 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"user_id": user.ID,
+		"user_id":  user.ID,
+		"username": user.Username,
 	})
 }
 
@@ -123,9 +124,8 @@ func GetUserInfo(c *fiber.Ctx) error {
 		})
 	}
 
-	user.Password = "REDACTED"
-
 	return c.JSON(fiber.Map{
+		"ID":       user.ID,
 		"username": user.Username,
 	})
 }

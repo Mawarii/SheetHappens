@@ -66,9 +66,9 @@ func GetCharacterById(c *fiber.Ctx) error {
 }
 
 type ReqCharacter struct {
-	Name   string         `gorm:"not null;" json:"name"`
+	Name   string         `json:"name"`
 	System string         `json:"system"`
-	Data   datatypes.JSON `gorm:"type:jsonb" json:"data"`
+	Data   datatypes.JSON `json:"data"`
 }
 
 func CreateCharacter(c *fiber.Ctx) error {
