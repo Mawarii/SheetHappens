@@ -132,7 +132,7 @@ func GetUserInfo(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"ID":       user.ID,
+		"user_id":  user.ID,
 		"username": user.Username,
 	})
 }
