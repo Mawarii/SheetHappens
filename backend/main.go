@@ -41,5 +41,5 @@ func main() {
 	characters.Put("/:id", controller.UpdateCharacter)
 	characters.Delete("/:id", controller.DeleteCharacter)
 
-	app.Listen(":3000")
+	app.Listen(":8080")
 }
