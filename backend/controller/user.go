@@ -30,7 +30,7 @@ func Register(c *fiber.Ctx) error {
 		})
 	}
 
-	body.Username = strings.ToLower(body.Username)
+	username := strings.ToLower(body.Username)
 	password, err := utils.GeneratePassword(body.Password)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -40,8 +40,9 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	var user = model.User{
-		Username: body.Username,
-		Password: password,
+		Username:    username,
+		DisplayName: body.Username,
+		Password:    password,
 	}
 
 	result := database.DB().Create(&user)
@@ -54,8 +55,9 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"user_id":  user.ID,
-		"username": user.Username,
+		"user_id":      user.ID,
+		"username":     user.Username,
+		"display_name": user.DisplayName,
 	})
 }
 
@@ -72,13 +74,13 @@ func Login(c *fiber.Ctx) error {
 	result := database.DB().Where("username = LOWER(?)", body.Username).First(&user)
 	if result.Error != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "invalid username or credentials",
+			"error": "invalid username or password",
 		})
 	}
 
 	if !utils.ComparePassword(user.Password, body.Password) {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "invalid username or credentials",
+			"error": "invalid username or password",
 		})
 	}
 
@@ -132,7 +134,8 @@ func GetUserInfo(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"user_id":  user.ID,
-		"username": user.Username,
+		"user_id":      user.ID,
+		"username":     user.Username,
+		"display_name": user.DisplayName,
 	})
 }
