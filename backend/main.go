@@ -21,7 +21,6 @@ func main() {
 	app.Use(recover.New())
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://localhost:3000",
-		AllowMethods:     "GET,POST,PUT,DELETE",
 		AllowCredentials: true,
 	}))
 
@@ -39,6 +38,13 @@ func main() {
 	characters.Post("/", controller.CreateCharacter)
 	characters.Put("/:id", controller.UpdateCharacter)
 	characters.Delete("/:id", controller.DeleteCharacter)
+
+	systems := api.Group("/systems", middleware.JWTProtected)
+	systems.Get("/", controller.GetSystems)
+	systems.Get("/:id", controller.GetSystemById)
+	systems.Post("/", controller.CreateSystem)
+	systems.Put("/:id", controller.UpdateSystem)
+	systems.Delete("/:id", controller.DeleteSystem)
 
 	app.Listen(":8080")
 }

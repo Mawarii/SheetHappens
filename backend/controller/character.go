@@ -66,9 +66,9 @@ func GetCharacterById(c *fiber.Ctx) error {
 }
 
 type ReqCharacter struct {
-	Name   string         `json:"name"`
-	System string         `json:"system"`
-	Data   datatypes.JSON `json:"data"`
+	SystemID uint           `json:"system_id"`
+	Name     string         `json:"name"`
+	Data     datatypes.JSON `json:"data"`
 }
 
 func CreateCharacter(c *fiber.Ctx) error {
@@ -86,7 +86,8 @@ func CreateCharacter(c *fiber.Ctx) error {
 
 	if err := c.BodyParser(body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": err.Error(),
+			"error":   "Failed to create character",
+			"details": err.Error(),
 		})
 	}
 
@@ -99,7 +100,7 @@ func CreateCharacter(c *fiber.Ctx) error {
 	var character model.Character
 	character.UserID = uint(userID)
 	character.Name = body.Name
-	character.System = body.System
+	character.SystemID = body.SystemID
 	character.Data = body.Data
 
 	result := database.DB().Create(&character)
@@ -130,7 +131,8 @@ func UpdateCharacter(c *fiber.Ctx) error {
 
 	if err := c.BodyParser(body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": err.Error(),
+			"error":   "Failed to update character",
+			"details": err.Error(),
 		})
 	}
 
@@ -158,7 +160,7 @@ func UpdateCharacter(c *fiber.Ctx) error {
 	}
 
 	character.Name = body.Name
-	character.System = body.System
+	character.SystemID = body.SystemID
 	character.Data = body.Data
 
 	database.DB().Save(&character)
@@ -186,7 +188,8 @@ func DeleteCharacter(c *fiber.Ctx) error {
 		})
 	}
 
-	result := database.DB().Unscoped().Where("id = ? AND user_id = ?", id, userID).Delete(&model.Character{})
+	// If you want to disable soft deletion use: database.DB().Unscoped().Where(...)
+	result := database.DB().Where("id = ? AND user_id = ?", id, userID).Delete(&model.Character{})
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error":   "Failed to delete character",
