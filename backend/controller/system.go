@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/Mawarii/sheethappens/database"
@@ -67,7 +68,7 @@ func CreateSystem(c *fiber.Ctx) error {
 	}
 
 	var system model.System
-	system.Name = body.Name
+	system.Name = strings.ToLower(body.Name)
 	system.Schema = body.Schema
 	system.Description = body.Description
 
@@ -117,7 +118,7 @@ func UpdateSystem(c *fiber.Ctx) error {
 		})
 	}
 
-	system.Name = body.Name
+	system.Name = strings.ToLower(body.Name)
 	system.Schema = body.Schema
 	system.Description = body.Description
 
