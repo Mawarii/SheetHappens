@@ -99,8 +99,8 @@ func CreateCharacter(c *fiber.Ctx) error {
 
 	var character model.Character
 	character.UserID = uint(userID)
-	character.Name = body.Name
 	character.SystemID = body.SystemID
+	character.Name = body.Name
 	character.Data = body.Data
 
 	result := database.DB().Create(&character)
@@ -159,8 +159,8 @@ func UpdateCharacter(c *fiber.Ctx) error {
 		})
 	}
 
-	character.Name = body.Name
 	character.SystemID = body.SystemID
+	character.Name = body.Name
 	character.Data = body.Data
 
 	database.DB().Save(&character)
