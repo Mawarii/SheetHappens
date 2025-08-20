@@ -69,6 +69,7 @@ func CreateSystem(c *fiber.Ctx) error {
 
 	var system model.System
 	system.Name = strings.ToLower(body.Name)
+	system.DisplayName = body.Name
 	system.Schema = body.Schema
 	system.Description = body.Description
 
@@ -119,6 +120,7 @@ func UpdateSystem(c *fiber.Ctx) error {
 	}
 
 	system.Name = strings.ToLower(body.Name)
+	system.DisplayName = body.Name
 	system.Schema = body.Schema
 	system.Description = body.Description
 
