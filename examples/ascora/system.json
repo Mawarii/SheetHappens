@@ -1,0 +1,62 @@
+{
+    "name": "Ascora",
+    "description": "",
+    "schema": {
+        "HP": 0,
+        "MB": 0,
+        "Initiative": 0,
+        "Rasse": "",
+        "Alter": 0,
+        "Größe": 0.0,
+        "Gewicht": 0.0,
+        "Level": 0,
+        "Geschlecht": "",
+        "Ausweichen": 0,
+        "Perks": [],
+        "Handwerk": {},
+        "Accessoires": [
+            {
+                "Name": "",
+                "Tier": 0,
+                "Typ": "",
+                "Effekt": ""
+            }
+        ],
+        "Rüstung": [
+            {
+                "Name": "",
+                "Typ": "",
+                "Wert": 0,
+                "Körperteil": "",
+                "Verzauberung": ""
+            }
+        ],
+        "Waffen": [
+            {
+                "Name": "",
+                "Tier": 0,
+                "Typ": "",
+                "ATK": 0,
+                "BLK": 0,
+                "Parade": 0,
+                "Verzauberung": "",
+                "Equipped": false
+            }
+        ],
+        "Skills": {
+            "Körperkraft": {},
+            "Geschicklichkeit": {},
+            "Intelligenz": {},
+            "Charisma": {}
+        },
+        "Spells": [
+            {
+                "Name": "",
+                "Kosten": "",
+                "Effekt": ""
+            }
+        ],
+        "Inventar": "\n",
+        "Notizen": "\n"
+    }
+}

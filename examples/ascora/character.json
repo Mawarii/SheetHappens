@@ -1,0 +1,123 @@
+{
+    "system_id": 1,
+    "name": "Rahn",
+    "data": {
+        "HP": 108,
+        "MB": 50,
+        "Initiative": 5,
+        "Rasse": "Mirlia",
+        "Alter": 24,
+        "Größe": "1.05 m",
+        "Gewicht": "20 kg",
+        "Level": 2,
+        "Geschlecht": "männlich",
+        "Ausweichen": 12,
+        "Perks": [
+            "Alkoholiker",
+            "Bluter",
+            "Nachtsicht"
+        ],
+        "Handwerk": {
+            "Bogenbau": 3
+        },
+        "Accessoires": [
+            {
+                "Name": "Kette der Nachtsicht",
+                "Tier": 1,
+                "Typ": "Amulett",
+                "Effekt": "Ist krass"
+            },
+            {
+                "name": "Durchdringungsring",
+                "tier": 2,
+                "type": "Ring"
+            }
+        ],
+        "Rüstung": [
+            {
+                "Name": "Helm des Werters",
+                "Typ": "Leicht",
+                "Wert": 10,
+                "Körperteil": "Kopf"
+            },
+            {
+                "Name": "Schuhe der Nacht",
+                "Typ": "Mittel",
+                "Wert": 13,
+                "Körperteil": "Füße",
+                "Verzauberung": "Verstummung"
+            },
+            {
+                "Name": "Stoffhemd",
+                "Typ": "Stoff",
+                "Wert": 1,
+                "Körperteil": "Brust",
+                "Verzauberung": "Feuerresistenz"
+            }
+        ],
+        "Waffen": [
+            {
+                "Name": "Schwert der Nacht",
+                "Tier": 1,
+                "Typ": "Kurzschwert",
+                "ATK": 22,
+                "BLK": 23,
+                "Parade": 21,
+                "Equipped": true
+            },
+            {
+                "Name": "Bogen des Lichts",
+                "Tier": 3,
+                "Typ": "Langbogen",
+                "ATK": 22,
+                "BLK": 23,
+                "Parade": 21,
+                "Verzauberung": "Super Nova",
+                "equipped": true
+            },
+            {
+                "Name": "Kriegsaxt des Orks",
+                "Tier": 2,
+                "Typ": "Kampfaxt",
+                "ATK": 22,
+                "BLK": 23,
+                "Parade": 21,
+                "equipped": false
+            }
+        ],
+        "Skills": {
+            "Körperkraft": {
+                "Heben": 12,
+                "Werfen": 43,
+                "Klettern": 25
+            },
+            "Geschicklichkeit": {
+                "Schleichen": 12,
+                "Angeln": 23
+            },
+            "Intelligenz": {
+                "Fauna": 78,
+                "Geschichte": 88,
+                "Spuren lesen": 34
+            },
+            "Charisma": {
+                "Flirten": 32,
+                "Etikette": 99
+            }
+        },
+        "Spells": [
+            {
+                "Name": "Eisgranate",
+                "Kosten": "-10 HP",
+                "Effekt": "Granate aus Eis"
+            },
+            {
+                "Name": "Hirnfrost",
+                "Kosten": "Macht müde",
+                "Effekt": "Lässt Wasser im Gehirn gefrieren. (Stun)"
+            }
+        ],
+        "Inventar": "item 1\nitem 2\nitem: 123",
+        "Notizen": "Was\nauch\nimmer."
+    }
+}

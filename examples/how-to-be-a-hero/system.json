@@ -1,0 +1,29 @@
+{
+    "name": "How to be a hero",
+    "description": "",
+    "schema": {
+        "Geschlecht": "",
+        "Alter": 0,
+        "Lebenspunkte": 0,
+        "Statur": "",
+        "Religion": "",
+        "Beruf": "",
+        "Familienstand": "",
+        "Waffen": [
+            {
+                "Name": "",
+                "Tier": 0,
+                "Damage": 0,
+                "Equipped": false
+            }
+        ],
+        "Skills": {
+            "Handeln": {},
+            "Wissen": {},
+            "Soziales": {}
+        },
+        "Spells": {},
+        "Inventar": "\n",
+        "Notizen": "\n"
+    }
+}
