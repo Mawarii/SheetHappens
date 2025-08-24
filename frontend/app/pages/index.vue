@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { FormError, FormSubmitEvent } from '@nuxt/ui'
-
 const api = useRuntimeConfig().public.apiUrl
 
 const state = reactive({
@@ -25,19 +23,12 @@ async function onSubmit() {
     console.error("Error during login:", e)
   }
 }
-const validate = (state: any): FormError[] => {
-  const errors = []
-  if (!state.username) errors.push({ name: 'username', message: 'Required' })
-  if (!state.password) errors.push({ name: 'password', message: 'Required' })
-  return errors
-}
 </script>
 
 <template>
   <UForm
-    :validate="validate"
     :state="state"
-    class="space-y-4"
+    class="space-y-4 flex flex-col items-center"
     @submit="onSubmit"
   >
     <UFormField
