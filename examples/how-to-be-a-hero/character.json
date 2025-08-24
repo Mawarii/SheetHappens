@@ -1,0 +1,54 @@
+{
+    "name": "char 1",
+    "system_id": 3,
+    "data": {
+        "Geschlecht": "männlich",
+        "Alter": 123,
+        "Lebenspunkte": 123,
+        "Statur": "krass",
+        "Religion": "keine",
+        "Beruf": "Handwerker",
+        "Familienstand": "ledig",
+        "Waffen": [
+            {
+                "Name": "Schwert",
+                "Tier": 1,
+                "Damage": 100,
+                "Equipped": true
+            },
+            {
+                "Name": "Bogen",
+                "Tier": 2,
+                "Damage": 30,
+                "Equipped": false
+            }
+        ],
+        "Skills": {
+            "Handeln": {
+                "Klettern": 60,
+                "Werfen": 30
+            },
+            "Wissen": {
+                "Magie": 50
+            },
+            "Soziales": {
+                "Verführen": 55,
+                "Lügen": 60
+            }
+        },
+        "Spells": [
+            {
+                "Name": "Eisgranate",
+                "Kosten": "keine",
+                "Effekt": "Sagt der Name"
+            },
+            {
+                "Name": "Verschlingen",
+                "Kosten": "keine",
+                "Effekt": "Verschlingt Dinge"
+            }
+        ],
+        "Inventar": "Item1\nItem2: 123\nNoch ein Item",
+        "Notizen": "Emtpy\nEmtpy"
+    }
+}

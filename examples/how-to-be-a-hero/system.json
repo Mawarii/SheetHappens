@@ -2,28 +2,88 @@
     "name": "How to be a hero",
     "description": "",
     "schema": {
-        "Geschlecht": "",
-        "Alter": 0,
-        "Lebenspunkte": 0,
-        "Statur": "",
-        "Religion": "",
-        "Beruf": "",
-        "Familienstand": "",
-        "Waffen": [
-            {
-                "Name": "",
-                "Tier": 0,
-                "Damage": 0,
-                "Equipped": false
+        "properties": {
+            "Alter": {
+                "type": "number"
+            },
+            "Beruf": {
+                "type": "string"
+            },
+            "Skills": {
+                "type": "object",
+                "properties": {
+                    "Wissen": {
+                        "type": "object",
+                        "properties": {}
+                    },
+                    "Handeln": {
+                        "type": "object",
+                        "properties": {}
+                    },
+                    "Soziales": {
+                        "type": "object",
+                        "properties": {}
+                    }
+                }
+            },
+            "Spells": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "Name": {
+                            "type": "string"
+                        },
+                        "Effekt": {
+                            "type": "string"
+                        },
+                        "Kosten": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "Statur": {
+                "type": "string"
+            },
+            "Waffen": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "Name": {
+                            "type": "string"
+                        },
+                        "Tier": {
+                            "type": "number"
+                        },
+                        "Damage": {
+                            "type": "number"
+                        },
+                        "Equipped": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            },
+            "Notizen": {
+                "type": "string"
+            },
+            "Inventar": {
+                "type": "string"
+            },
+            "Religion": {
+                "type": "string"
+            },
+            "Geschlecht": {
+                "type": "string"
+            },
+            "Lebenspunkte": {
+                "type": "number"
+            },
+            "Familienstand": {
+                "type": "string"
             }
-        ],
-        "Skills": {
-            "Handeln": {},
-            "Wissen": {},
-            "Soziales": {}
-        },
-        "Spells": {},
-        "Inventar": "\n",
-        "Notizen": "\n"
+        }
     }
 }
