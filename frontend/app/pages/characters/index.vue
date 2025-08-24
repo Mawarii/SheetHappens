@@ -2,7 +2,14 @@
 const api = useRuntimeConfig().public.apiUrl
 const headers = useRequestHeaders(["cookie"])
 
-const { data: chars } = useFetch(api + "/characters", {
+interface Character {
+  ID: number
+  system_id: number
+  name: string
+  data: JSON
+}
+
+const { data: chars } = await useFetch<Character[]>(`${api}/characters`, {
   headers,
   method: "GET",
   credentials: "include",
@@ -11,10 +18,18 @@ const { data: chars } = useFetch(api + "/characters", {
 
 <template>
   <h1>Characters</h1>
-  <article
-    v-for="char in chars"
-    v-bind:key="char.id"
+  <div
+    v-if="chars"
+    class="grid grid-cols-2 gap-3"
   >
-    {{ char.name }}
-  </article>
+    <UButton
+      v-for="char in chars"
+      @click="navigateTo(`/characters/${char.ID}`)"
+    >
+      {{ char.name }}
+    </UButton>
+  </div>
+  <div v-else>
+    <h1>No Characters</h1>
+  </div>
 </template>

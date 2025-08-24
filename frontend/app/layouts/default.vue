@@ -1,15 +1,44 @@
+<script setup lang="ts">
+import type { NavigationMenuItem } from '@nuxt/ui'
+
+const items = ref<NavigationMenuItem[][]>([
+  [
+    {
+      label: 'SheetHappens',
+      icon: 'i-lucide-book-open',
+    },
+    {
+      label: 'Characters',
+      icon: 'i-lucide-database',
+      to: '/characters'
+    }
+  ],
+  [
+    {
+      label: 'Logout',
+      icon: 'i-lucide-log-out',
+      to: '/logout'
+    }
+  ]
+])
+
+interface User {
+  user_id: number
+  username: string
+  display_name: string
+}
+
+const user = useState<User>("user")
+
+</script>
+
 <template>
-  <div class="container">
-    <nav>
-      <ul>
-        <li><strong>Acme Corp</strong></li>
-      </ul>
-      <ul>
-        <li>
-          <NuxtLink to="/characters">Characters</NuxtLink>
-        </li>
-      </ul>
-    </nav>
-    <slot />
-  </div>
+  <UNavigationMenu
+    color="neutral"
+    variant="link"
+    highlight
+    :items="items"
+    class="w-full"
+  />
+  <slot />
 </template>

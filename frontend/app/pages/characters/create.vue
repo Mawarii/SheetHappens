@@ -1,3 +1,3 @@
 <template>
-  <h1>Create Characters</h1>
+  <h1>Create Character</h1>
 </template>

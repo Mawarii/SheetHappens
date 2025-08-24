@@ -1,25 +1,21 @@
-<script lang="ts" setup>
+<script setup lang="ts">
+import type { FormError, FormSubmitEvent } from '@nuxt/ui'
+
 const api = useRuntimeConfig().public.apiUrl
 
-const headers = useRequestHeaders(["cookie"])
-
-const { data: user } = await useFetch(api + "/auth/info", {
-  headers,
-  credentials: "include",
+const state = reactive({
+  username: undefined,
+  password: undefined
 })
 
-
-const username = ref("");
-const password = ref("");
-
-async function OnSubmit() {
+async function onSubmit() {
   try {
-    const res = await $fetch(api + "/auth/login", {
+    const res = await $fetch(`${api}/auth/login`, {
       method: "POST",
       credentials: "include",
       body: {
-        username: username.value,
-        password: password.value,
+        username: state.username,
+        password: state.password,
       },
     })
     if (res) {
@@ -29,38 +25,40 @@ async function OnSubmit() {
     console.error("Error during login:", e)
   }
 }
+const validate = (state: any): FormError[] => {
+  const errors = []
+  if (!state.username) errors.push({ name: 'username', message: 'Required' })
+  if (!state.password) errors.push({ name: 'password', message: 'Required' })
+  return errors
+}
 </script>
 
 <template>
-  <main>
-    <div class="container">
-      <h1>Login {{ user.username }}</h1>
-      <form @submit.prevent="OnSubmit">
-        <input
-          v-model="username"
-          type="text"
-          placeholder="Username"
-          aria-label="Login"
-          autoComplete="username"
-          required
-        />
-        <input
-          v-model="password"
-          type="password"
-          placeholder="Password"
-          aria-label="Password"
-          autoComplete="current-password"
-          required
-        />
-        <button type="submit">Login</button>
-      </form>
-    </div>
-  </main>
-</template>
+  <UForm
+    :validate="validate"
+    :state="state"
+    class="space-y-4"
+    @submit="onSubmit"
+  >
+    <UFormField
+      label="Username"
+      name="username"
+    >
+      <UInput v-model="state.username" />
+    </UFormField>
 
-<style scoped>
-main {
-  max-width: 600px;
-  margin: 4rem auto;
-}
-</style>
+    <UFormField
+      label="Password"
+      name="password"
+    >
+      <UInput
+        v-model="state.password"
+        type="password"
+      />
+    </UFormField>
+
+    <UButton type="submit">
+      Submit
+    </UButton>
+  </UForm>
+</template>
