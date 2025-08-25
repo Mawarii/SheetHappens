@@ -10,8 +10,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const user = useState<User>("user")
 
-  const { data, error } = await useFetch<User>(`${api}/auth/info`, {
+  const { data, error } = await useFetch<User>(() => `${api}/auth/info`, {
     headers,
+    method: "GET",
     credentials: "include",
   })
 
@@ -22,7 +23,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (error.value?.statusCode === 401 && to.path !== "/") {
     return navigateTo("/")
   }
-  else if (data.value && to.path === "/") {
+  else if (error.value?.statusCode === 200 && to.path === "/" && user.value) {
     return navigateTo("/characters")
   }
 

@@ -5,20 +5,49 @@ interface User {
   display_name: string
 }
 
-const user = useState<User>("user")
+const user = useState<User | undefined>("user")
+
+const api = useRuntimeConfig().public.apiUrl
+const headers = useRequestHeaders(["cookie"])
+
+async function logout() {
+  try {
+    const res = await $fetch(`${api}/auth/logout`, {
+      headers,
+      method: "GET",
+      credentials: "include",
+    })
+    if (res) {
+      await navigateTo("/")
+      user.value = undefined
+    }
+  } catch (e) {
+    console.error("Error during logout:", e)
+  }
+}
 </script>
 
 <template>
-  <nav class="px-4 py-3 flex items-center space-x-8">
-    <div class="text-lg font-bold">
-      SheetHappens
-    </div>
-    <ul class="flex space-x-4">
-      <li>
-        <NuxtLink to="/characters">Characters</NuxtLink>
-      </li>
+  <nav class="flex w-full max-w-full items-center justify-between px-4 py-2 mx-auto">
+    <ul class="flex items-center gap-4">
+      <li class="text-lg font-bold">SheetHappens</li>
       <li v-if="user">
-        <NuxtLink to="/logout">Logout</NuxtLink>
+        <UButton
+          to="/characters"
+          color="neutral"
+          variant="outline"
+          icon="i-lucide-files"
+        >Characters</UButton>
+      </li>
+    </ul>
+    <ul class="flex items-center">
+      <li v-if="user">
+        <UButton
+          @click="logout"
+          color="neutral"
+          variant="outline"
+          icon="i-lucide-log-out"
+        />
       </li>
     </ul>
   </nav>
